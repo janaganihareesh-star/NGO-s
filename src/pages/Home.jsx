@@ -10,7 +10,7 @@ import BlogGrid from '../components/BlogGrid';
 import GetInvolved from '../components/GetInvolved';
 import ContactSection from '../components/ContactSection';
 import SEO from '../components/SEO';
-import { Heart, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
+import { Heart, Globe, Camera, MessageCircle, Play, Briefcase } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -133,11 +133,11 @@ const Home = () => {
             
             <div className="flex justify-center gap-10">
               {[
-                { name: 'Facebook', icon: <Facebook size={22} />, color: 'hover:text-[#1877F2]' },
-                { name: 'Instagram', icon: <Instagram size={22} />, color: 'hover:text-[#E4405F]' },
-                { name: 'Twitter', icon: <Twitter size={22} />, color: 'hover:text-[#1DA1F2]' },
-                { name: 'YouTube', icon: <Youtube size={22} />, color: 'hover:text-[#FF0000]' },
-                { name: 'LinkedIn', icon: <Linkedin size={22} />, color: 'hover:text-[#0A66C2]' }
+                { name: 'Facebook', icon: <Globe size={22} />, color: 'hover:text-[#1877F2]' },
+                { name: 'Instagram', icon: <Camera size={22} />, color: 'hover:text-[#E4405F]' },
+                { name: 'Twitter', icon: <MessageCircle size={22} />, color: 'hover:text-[#1DA1F2]' },
+                { name: 'YouTube', icon: <Play size={22} />, color: 'hover:text-[#FF0000]' },
+                { name: 'LinkedIn', icon: <Briefcase size={22} />, color: 'hover:text-[#0A66C2]' }
               ].map((social) => (
                 <a 
                   key={social.name} 
