@@ -1,0 +1,16 @@
+{
+  "name": "Lakshmi NGO | Protecting Life, Restoring Hope",
+  "short_name": "Lakshmi NGO",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#C9933A",
+  "description": "Empowering the vulnerable, restoring dignity, and building a sustainable future.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
