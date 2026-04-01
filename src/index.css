@@ -39,9 +39,18 @@
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #E2B659;
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E2B659;
+  }
+
+  /* Global Contrast Fixes */
+  .text-primary-offwhite\/60 { @apply text-primary-offwhite opacity-80; }
+  .text-primary-offwhite\/50 { @apply text-primary-offwhite opacity-70; }
+  .text-primary-offwhite\/40 { @apply text-primary-offwhite opacity-60; }
+  .text-primary-offwhite\/30 { @apply text-primary-offwhite opacity-50; }
+  
+  .dark .text-gray-400 { color: #D1D5DB; }
+  .dark .text-gray-500 { color: #9CA3AF; }
 
 /* Glassmorphism */
 .glass {
@@ -73,11 +82,11 @@ html:not(.dark) .text-primary-navy {
 }
 
 html:not(.dark) .text-primary-offwhite {
-  color: #374151 !important;
+  color: #1F2937 !important; /* DARKER FOR VISIBILITY */
 }
 
 html:not(.dark) .text-primary-gold\/80 {
-  color: #C9933A !important;
+  color: #B47C1C !important; /* STRONGER GOLD */
 }
 
 html:not(.dark) h1, 
@@ -100,7 +109,9 @@ html:not(.dark) .border-white\/10 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-html:not(.dark) .text-gray-400,
+html:not(.dark) .text-gray-400 {
+  color: #6B7280 !important; /* DARKER GRAY FOR HEADERS */
+}
 html:not(.dark) .text-gray-300 {
   color: #4B5563 !important;
 }

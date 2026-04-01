@@ -14,14 +14,6 @@ const MOCK_USERS = {
     role: 'admin',
     password: 'adminpass' // In production, never ship passwords. This is for simulation!
   },
-  'officer@lakshmi.org': {
-    uid: 'officer-402',
-    name: 'Field Officer Dev',
-    email: 'officer@lakshmi.org',
-    role: 'officer',
-    password: 'secure123',
-    region: 'Maharashtra'
-  },
   'user@lakshmi.org': {
     uid: 'vol-8931',
     name: 'Dedicated Volunteer',
@@ -108,14 +100,6 @@ export const AuthProvider = ({ children }) => {
               email: email,
               interest: userData.interest || 'General',
               priority: 'Normal',
-              createdAt: serverTimestamp()
-            });
-          } else if (userData.role === 'officer') {
-            await setDoc(doc(db, 'officers', uid), {
-              fullName: userData.name,
-              email: email,
-              region: userData.region,
-              status: 'Active',
               createdAt: serverTimestamp()
             });
           }

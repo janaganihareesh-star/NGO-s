@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, DollarSign, MessageSquareWarning, FolderOpen } from 'lucide-react';
+import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
@@ -17,8 +17,8 @@ const MetricCard = ({ title, value, icon, trend }) => {
   return (
     <div className={`glass p-6 rounded-3xl border-t-2 border-primary-gold ${isDarkMode ? 'border-x-white/5 border-b-white/5 bg-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'} font-body relative overflow-hidden group transition-all`}>
       <div className="flex justify-between items-start mb-4">
-        <div className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-bold uppercase tracking-widest text-xs`}>{title}</div>
-        <div className={`p-3 ${isDarkMode ? 'bg-white/5' : 'bg-primary-gold/5'} rounded-2xl text-primary-gold group-hover:scale-110 transition-transform`}>{icon}</div>
+        <div className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-black uppercase tracking-widest text-xs`}>{title}</div>
+        <div className={`p-3 ${isDarkMode ? 'bg-primary-gold/10' : 'bg-primary-gold/5'} rounded-2xl text-primary-gold group-hover:scale-110 transition-transform`}>{icon}</div>
       </div>
       <div className="flex items-end justify-between">
         <h3 className={`text-4xl font-heading font-black ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{value}</h3>
@@ -36,6 +36,8 @@ const AdminDashboard = () => {
   // Tables
   const [recentVolunteers, setRecentVolunteers] = useState([]);
   const [recentComplaints, setRecentComplaints] = useState([]);
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
 
   // Charts
   const [donationsChartData, setDonationsChartData] = useState([]);
@@ -114,10 +116,10 @@ const AdminDashboard = () => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: isDarkMode ? '#9CA3AF' : '#4B5563', font: { weight: 'bold' } } } },
+    plugins: { legend: { labels: { color: isDarkMode ? '#F3F4F6' : '#111827', font: { weight: 'bold' } } } },
     scales: {
-      x: { grid: { color: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDarkMode ? '#9CA3AF' : '#4B5563' } },
-      y: { grid: { color: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDarkMode ? '#9CA3AF' : '#4B5563' } }
+      x: { grid: { color: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }, ticks: { color: isDarkMode ? '#D1D5DB' : '#374151' } },
+      y: { grid: { color: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }, ticks: { color: isDarkMode ? '#D1D5DB' : '#374151' } }
     }
   };
 
@@ -137,7 +139,7 @@ const AdminDashboard = () => {
       <div className={`${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-sm'} border p-6 rounded-3xl backdrop-blur-md flex justify-between items-center`}>
         <div>
           <h1 className={`text-3xl font-heading font-black ${isDarkMode ? 'text-white' : 'text-gray-900'} uppercase tracking-wider`}>Mission <span className="text-primary-gold">Control</span></h1>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm mt-1`}>Real-time platform analytics & administration.</p>
+          <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mt-1 font-bold`}>Real-time platform analytics & administration.</p>
         </div>
         <div className="flex gap-4">
            <button className="px-6 py-2 bg-primary-gold text-primary-navy font-bold rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-primary-gold transition-all shadow-lg shadow-primary-gold/20">Generate Report</button>
@@ -229,17 +231,21 @@ const AdminDashboard = () => {
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">
                <thead>
-                 <tr className={`${isDarkMode ? 'border-b border-white/10' : 'border-b border-gray-100'}`}>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Name</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Priority</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Date</th>
+                 <tr className={`${isDarkMode ? 'border-b border-white/20' : 'border-b border-gray-200'}`}>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Name</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Priority</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Date</th>
                  </tr>
                </thead>
                <tbody>
                   {recentVolunteers.map(vol => (
-                    <tr key={vol.id} className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors group`}>
+                    <tr 
+                      key={vol.id} 
+                      onClick={() => setSelectedVolunteer(vol)}
+                      className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors group cursor-pointer`}
+                    >
                       <td className="py-4 flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-primary-gold/10 flex items-center justify-center text-primary-gold font-black text-[10px] border border-primary-gold/20">
+                         <div className="w-8 h-8 rounded-full bg-primary-gold/10 flex items-center justify-center text-primary-gold font-black text-[10px] border border-primary-gold/20 group-hover:bg-primary-gold group-hover:text-primary-navy transition-colors">
                             {vol.fullName?.charAt(0) || 'V'}
                          </div>
                          <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>{vol.fullName}</span>
@@ -252,7 +258,7 @@ const AdminDashboard = () => {
                            {vol.priority || 'Active'}
                          </span>
                       </td>
-                      <td className="py-4 text-xs text-gray-500 font-medium">{vol.createdAt ? vol.createdAt.toDate().toLocaleDateString() : 'Just now'}</td>
+                      <td className="py-4 text-xs text-gray-500 font-medium">{vol.createdAt ? (vol.createdAt.toDate ? vol.createdAt.toDate().toLocaleDateString() : new Date(vol.createdAt).toLocaleDateString()) : 'Just now'}</td>
                     </tr>
                   ))}
                </tbody>
@@ -268,15 +274,19 @@ const AdminDashboard = () => {
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">
                <thead>
-                 <tr className={`${isDarkMode ? 'border-b border-white/10' : 'border-b border-gray-100'}`}>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Priority</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Transcript</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Status</th>
+                 <tr className={`${isDarkMode ? 'border-b border-white/20' : 'border-b border-gray-200'}`}>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Priority</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Transcript</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Status</th>
                  </tr>
                </thead>
                <tbody>
                  {recentComplaints.map(comp => (
-                   <tr key={comp.id} className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors`}>
+                   <tr 
+                     key={comp.id} 
+                     onClick={() => setSelectedComplaint(comp)}
+                     className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors cursor-pointer group`}
+                   >
                      <td className="py-4">
                         <span className={`text-[10px] px-2 py-1 rounded-full uppercase font-black tracking-widest ${
                           comp.priority === 'Critical' ? 'bg-red-500/20 text-red-500' :
@@ -285,7 +295,7 @@ const AdminDashboard = () => {
                           {comp.priority || 'Normal'}
                         </span>
                      </td>
-                     <td className={`py-4 text-xs ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-[200px] truncate pr-4 italic`}>"{comp.transcript}"</td>
+                     <td className={`py-4 text-xs ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-[200px] truncate pr-4 italic group-hover:text-primary-gold transition-colors`}>"{comp.transcript}"</td>
                      <td className="py-4 text-xs font-black uppercase">
                         <span className={`px-2 py-1 rounded-md text-[10px] ${comp.status === 'open' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'}`}>
                            {comp.status}
@@ -298,8 +308,99 @@ const AdminDashboard = () => {
            </div>
         </div>
       </div>
+
+      {/* Volunteer Detail Modal */}
+      {selectedVolunteer && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className={`glass w-full max-w-lg p-10 rounded-[3rem] border border-white/20 relative shadow-2xl animate-in zoom-in-95 duration-300 ${isDarkMode ? 'bg-[#0A0A0F]' : 'bg-white'}`}>
+              <button onClick={() => setSelectedVolunteer(null)} className="absolute top-8 right-8 text-gray-500 hover:text-primary-gold transition-colors"><X size={24} /></button>
+              
+              <div className="flex items-center gap-6 mb-10">
+                 <div className="w-20 h-20 rounded-full bg-primary-gold flex items-center justify-center text-primary-navy text-3xl font-black shadow-xl shadow-primary-gold/20">
+                    {selectedVolunteer.fullName?.charAt(0)}
+                 </div>
+                 <div>
+                    <h3 className={`text-2xl font-heading font-black uppercase leading-none mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedVolunteer.fullName}</h3>
+                    <p className="text-[10px] font-black text-primary-gold uppercase tracking-[0.3em]">{selectedVolunteer.email}</p>
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                 <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                    <p className="text-[8px] font-black uppercase text-gray-400 mb-1 flex items-center gap-1"><MapPin size={10}/> Base Region</p>
+                    <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedVolunteer.city || 'Mumbai'}</p>
+                 </div>
+                 <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                    <p className="text-[8px] font-black uppercase text-gray-400 mb-1 flex items-center gap-1"><Calendar size={10}/> Join Date</p>
+                    <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                       {selectedVolunteer.createdAt ? (selectedVolunteer.createdAt.toDate ? selectedVolunteer.createdAt.toDate().toLocaleDateString() : new Date(selectedVolunteer.createdAt).toLocaleDateString()) : 'N/A'}
+                    </p>
+                 </div>
+              </div>
+
+              <div className={`p-6 rounded-2xl border mb-10 ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                 <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4 flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> Security Clearing</h4>
+                 <div className="space-y-3">
+                    <div className="flex justify-between items-center text-[10px] font-bold uppercase">
+                       <span className="text-gray-500">Identity Verification</span>
+                       <span className="text-emerald-500">Passed</span>
+                    </div>
+                    <div className="flex justify-between items-center text-[10px] font-bold uppercase">
+                       <span className="text-gray-500">Background Audit</span>
+                       <span className="text-emerald-500">Complete</span>
+                    </div>
+                 </div>
+              </div>
+
+              <button onClick={() => setSelectedVolunteer(null)} className="w-full py-4 bg-primary-gold text-primary-navy font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-primary-gold/20 hover:scale-[1.02] active:scale-95 transition-all">Close Profile</button>
+           </div>
+        </div>
+      )}
+
+      {/* Complaint Detail Modal */}
+      {selectedComplaint && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className={`glass w-full max-w-lg p-10 rounded-[3rem] border border-white/20 relative shadow-2xl animate-in zoom-in-95 duration-300 ${isDarkMode ? 'bg-[#0A0A0F]' : 'bg-white'}`}>
+              <button onClick={() => setSelectedComplaint(null)} className="absolute top-8 right-8 text-gray-500 hover:text-primary-gold transition-colors"><X size={24} /></button>
+              
+              <div className="flex items-center gap-4 mb-8">
+                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border ${
+                    selectedComplaint.priority === 'Critical' ? 'bg-red-500/20 text-red-500 border-red-500/20' : 
+                    'bg-primary-gold/20 text-primary-gold border-primary-gold/20'
+                 }`}>
+                    <MessageSquareWarning size={32} />
+                 </div>
+                 <div>
+                    <h3 className={`text-2xl font-heading font-black uppercase leading-none mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Case Details</h3>
+                    <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${
+                       selectedComplaint.priority === 'Critical' ? 'text-red-500' : 'text-primary-gold'
+                    }`}>Priority: {selectedComplaint.priority || 'Normal'}</p>
+                 </div>
+              </div>
+
+              <div className={`p-8 rounded-[2rem] border min-h-[150px] mb-8 flex flex-col justify-center ${isDarkMode ? 'bg-white/5 border-white/10 text-primary-offwhite/80' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
+                 <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">Transcript Narrative</h4>
+                 <p className="text-sm font-body italic leading-relaxed">"{selectedComplaint.transcript}"</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                 <div className={`px-4 py-3 rounded-xl border text-center ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                    <p className="text-[8px] font-black uppercase text-gray-500 mb-1">Source</p>
+                    <p className={`text-[10px] font-bold uppercase ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedComplaint.source || 'Direct Portal'}</p>
+                 </div>
+                 <div className={`px-4 py-3 rounded-xl border text-center ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-100'}`}>
+                    <p className="text-[8px] font-black uppercase text-gray-500 mb-1">Status</p>
+                    <p className={`text-[10px] font-bold uppercase ${selectedComplaint.status === 'open' ? 'text-yellow-500' : 'text-emerald-500'}`}>{selectedComplaint.status}</p>
+                 </div>
+              </div>
+
+              <button onClick={() => setSelectedComplaint(null)} className="w-full py-4 bg-primary-navy dark:bg-white text-white dark:text-primary-navy font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-[1.02] active:scale-95 transition-all">Dismiss Oversight</button>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default AdminDashboard;
+

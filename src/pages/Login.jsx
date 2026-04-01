@@ -32,8 +32,6 @@ const Login = () => {
         navigate(from);
       } else if (user.role === 'admin') {
         navigate('/admin');
-      } else if (user.role === 'officer') {
-        navigate('/officer');
       } else {
         navigate('/volunteer-dashboard');
       }
@@ -59,8 +57,8 @@ const Login = () => {
     : 'text-gray-900';
 
   const inputClass = isDarkMode
-    ? 'bg-white/5 border border-white/10 text-white placeholder:text-white/20'
-    : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400';
+    ? 'bg-white/10 border border-white/20 text-white placeholder:text-white/40'
+    : 'bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400';
 
   const credBtnClass = isDarkMode
     ? 'border-white/10 text-white/70 hover:bg-white/5'
@@ -81,7 +79,7 @@ const Login = () => {
                <Shield className="text-primary-gold" size={32} />
             </div>
             <h1 className={"text-4xl font-heading font-black mb-2 uppercase tracking-tight " + labelClass}>Portal Access</h1>
-            <p className={isDarkMode ? 'text-sm font-bold tracking-widest uppercase text-primary-offwhite/40' : 'text-sm font-bold tracking-widest uppercase text-gray-500'}>Secure Staff & Volunteer Login</p>
+            <p className={isDarkMode ? 'text-sm font-black tracking-widest uppercase text-primary-gold opacity-90' : 'text-sm font-bold tracking-widest uppercase text-gray-600'}>Secure Staff & Volunteer Login</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6 relative z-10">
@@ -129,8 +127,8 @@ const Login = () => {
               {isAuthenticating ? 'Verifying...' : 'Authorize Access'} <ArrowRight size={16} />
             </button>
             <div className="text-center pt-2">
-               <p className={isDarkMode ? 'text-xs font-bold uppercase tracking-widest text-primary-offwhite/30' : 'text-xs font-bold uppercase tracking-widest text-gray-500'}>
-                  New to the system? <Link to="/register" className="text-primary-gold hover:underline">Register for Portal Access</Link>
+              <p className={isDarkMode ? 'text-xs font-black uppercase tracking-widest text-white/50' : 'text-xs font-bold uppercase tracking-widest text-gray-600'}>
+                  New to the system? <Link to="/register" className="text-primary-gold hover:text-white transition-colors hover:underline">Register for Portal Access</Link>
                </p>
             </div>
           </form>
@@ -142,9 +140,7 @@ const Login = () => {
                 <button onClick={() => prefill('admin@lakshmi.org', 'adminpass')} className={"p-3 rounded-lg border text-xs font-bold text-center hover:border-primary-gold transition-all " + credBtnClass}>
                    Admin Root
                 </button>
-                <button onClick={() => prefill('officer@lakshmi.org', 'secure123')} className={"p-3 rounded-lg border text-xs font-bold text-center hover:border-primary-gold transition-all " + credBtnClass}>
-                   Field Officer
-                </button>
+
                 <button onClick={() => prefill('user@lakshmi.org', 'volunteer')} className={"p-3 rounded-lg border text-xs font-bold text-center hover:border-primary-gold transition-all " + credBtnClass}>
                    Volunteer
                 </button>

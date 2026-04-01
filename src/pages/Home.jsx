@@ -18,6 +18,9 @@ const Home = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return; // Skip heavy GSAP animations on mobile for performance
+
     // GSAP ScrollTrigger Animations
     const ctx = gsap.context(() => {
       // Fade in sections on scroll
@@ -84,7 +87,7 @@ const Home = () => {
         style={{ backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.95), rgba(10, 10, 15, 0.95)), url('/indian_mission_collage_1775031301797.png')` }}>
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto glass p-16 rounded-[4rem] border-primary-gold/10">
-            <Heart className="mx-auto text-primary-gold mb-8 animate-pulse" size={64} />
+            <Heart className={`mx-auto text-primary-gold mb-8 ${window.innerWidth >= 768 ? 'animate-pulse' : ''}`} size={64} />
             <h2 className="mission-text text-4xl md:text-6xl font-heading font-black mb-10 tracking-tight">OUR SACRED <span className="text-primary-gold italic">MISSION</span></h2>
             <p className="mission-text text-xl md:text-2xl font-body text-primary-offwhite/70 leading-relaxed mb-12 italic">
               "We believe that every human being deserves a chance to thrive. Our mission is to bridge the gap between resources and results, empowering communities through radical kindness and systemic change."

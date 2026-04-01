@@ -36,11 +36,7 @@ const AdminDashboard = lazy(() => import('./admin/AdminDashboard'));
 const AdminComplaints = lazy(() => import('./admin/AdminComplaints'));
 const AdminDonations = lazy(() => import('./admin/AdminDonations'));
 
-// Officer Pages
-const OfficerLayout = lazy(() => import('./officer/OfficerLayout'));
-const OfficerDashboard = lazy(() => import('./officer/OfficerDashboard'));
-const OfficerComplaints = lazy(() => import('./officer/OfficerComplaints'));
-const OfficerFieldWorks = lazy(() => import('./officer/OfficerFieldWorks'));
+
 
 // Volunteer Pages
 const VolunteerLayout = lazy(() => import('./volunteer-dashboard/VolunteerLayout'));
@@ -89,7 +85,6 @@ class ErrorBoundary extends React.Component {
 const GlobalLayout = ({ children }) => {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith('/admin') || 
-                      location.pathname.startsWith('/officer') || 
                       location.pathname.startsWith('/volunteer-dashboard');
 
   return (
@@ -136,17 +131,7 @@ const AnimatedRoutes = () => {
             <Route path="settings" element={<GeneralSettings />} />
           </Route>
 
-          {/* Protected System: Field Officer Hub */}
-          <Route path="/officer" element={
-            <ProtectedRoute allowedRoles={['admin', 'officer']}>
-               <OfficerLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<OfficerDashboard />} />
-            <Route path="complaints" element={<OfficerComplaints />} />
-            <Route path="field-works" element={<OfficerFieldWorks />} />
-            <Route path="settings" element={<GeneralSettings />} />
-          </Route>
+
 
           <Route path="/volunteer-dashboard" element={
             <ProtectedRoute allowedRoles={['admin', 'user']}>

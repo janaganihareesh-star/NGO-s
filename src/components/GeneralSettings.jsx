@@ -9,12 +9,26 @@ import SEO from './SEO';
 const GeneralSettings = () => {
   const { currentUser } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
+  const fileInputRef = React.useRef(null);
+  const [profilePic, setProfilePic] = useState(null);
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
     email: currentUser?.email || '',
     region: currentUser?.region || 'Maharashtra',
     notifications: true
   });
+
+  const handlePicClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onPicChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePic(URL.createObjectURL(file));
+      toast.success("Profile imagery updated. Finalize changes to sync.");
+    }
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -36,8 +50,16 @@ const GeneralSettings = () => {
             <div className="glass p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 text-center relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-24 bg-primary-gold/10" />
                <div className="relative z-10">
-                  <div className="w-24 h-24 mx-auto rounded-full border-4 border-white dark:border-[#0A0A0F] overflow-hidden shadow-2xl mb-4 group cursor-pointer">
-                     <img src={`https://ui-avatars.com/api/?name=${formData.name.replace(' ', '+')}&background=C9933A&color=fff`} className="w-full h-full object-cover" alt="avatar" />
+                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={onPicChange} />
+                  <div 
+                    onClick={handlePicClick}
+                    className="w-24 h-24 mx-auto rounded-full border-4 border-white dark:border-[#0A0A0F] overflow-hidden shadow-2xl mb-4 group cursor-pointer relative"
+                  >
+                     <img 
+                       src={profilePic || `https://ui-avatars.com/api/?name=${formData.name.replace(' ', '+')}&background=C9933A&color=fff`} 
+                       className="w-full h-full object-cover" 
+                       alt="avatar" 
+                     />
                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Camera size={20} className="text-white" />
                      </div>

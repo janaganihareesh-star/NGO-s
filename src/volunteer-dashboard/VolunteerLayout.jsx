@@ -131,6 +131,49 @@ const VolunteerLayout = () => {
               Community Engagement Hub
             </h1>
           </div>
+
+          <div className="flex items-center gap-4">
+             <div className="relative group">
+                <button className="p-3 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl border border-gray-200 dark:border-white/10 hover:border-primary-gold/50 transition-all relative">
+                   <Bell size={20} />
+                   <div className="absolute top-0 right-0 w-3 h-3 bg-rose-500 rounded-full border-2 border-white dark:border-[#0A0A0F]" />
+                </button>
+                
+                {/* Notifications Dropdown */}
+                <div className="absolute top-full right-0 mt-4 w-80 bg-white dark:bg-[#0A0A0F] rounded-[2rem] border border-gray-200 dark:border-white/10 shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all p-6 z-[100]">
+                   <h4 className="text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white mb-6 flex justify-between items-center">
+                      Mission Updates
+                      <span className="text-[8px] bg-rose-500 text-white px-2 py-0.5 rounded-full">3 New</span>
+                   </h4>
+                   <div className="space-y-4">
+                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                         <div className="w-2 h-2 bg-rose-500 rounded-full mt-1.5 shrink-0" />
+                         <div>
+                            <p className="text-xs font-bold text-gray-900 dark:text-white">Safety Refresh Mandatory</p>
+                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Complete Q4 module by Oct 31.</p>
+                         </div>
+                      </div>
+                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                         <div className="w-2 h-2 bg-primary-gold rounded-full mt-1.5 shrink-0" />
+                         <div>
+                            <p className="text-xs font-bold text-gray-900 dark:text-white">Campaign Update: Juhu Beach</p>
+                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Mission starting in 4 hours.</p>
+                         </div>
+                      </div>
+                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                         <div className="w-2 h-2 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
+                         <div>
+                            <p className="text-xs font-bold text-gray-900 dark:text-white">Impact Points Earned</p>
+                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Received 120 points for Coastal Mission.</p>
+                         </div>
+                      </div>
+                   </div>
+                   <button className="w-full py-3 mt-6 border-t border-gray-100 dark:border-white/5 text-[10px] font-black uppercase tracking-widest text-primary-gold hover:text-orange-500 transition-colors">
+                      Clear All Notifications
+                   </button>
+                </div>
+             </div>
+          </div>
         </header>
 
         <main className="flex-1 p-6 lg:p-10">

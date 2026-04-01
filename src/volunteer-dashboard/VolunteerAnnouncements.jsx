@@ -4,6 +4,7 @@ import { Bell, Info, AlertTriangle, CheckCircle, ArrowRight, Calendar, Bookmark 
 import SEO from '../components/SEO';
 
 const VolunteerAnnouncements = () => {
+  const [selectedItem, setSelectedItem] = React.useState(null);
   const announcements = [
     { 
       id: 1, title: 'Annual Gala Night: Volunteers Needed!', type: 'Update', 
@@ -81,13 +82,35 @@ const VolunteerAnnouncements = () => {
                 <button className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 transition-colors">
                    <Bookmark size={18} />
                 </button>
-                <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary-gold hover:text-orange-500 group">
-                   Details <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </button>
+                 <button 
+                   onClick={() => setSelectedItem(item)}
+                   className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary-gold hover:text-orange-500 group"
+                 >
+                    Details <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                 </button>
             </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Announcement Details Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="w-full max-w-lg bg-white dark:bg-[#0A0A0F] rounded-[3rem] border border-gray-200 dark:border-white/10 p-10 shadow-2xl relative overflow-hidden text-center">
+              <div className="absolute top-0 left-0 w-full h-2 bg-primary-gold" />
+              <div className="mb-6 mx-auto w-20 h-20 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center border border-gray-100 dark:border-white/10">
+                 {selectedItem.icon}
+              </div>
+              <h3 className="text-3xl font-heading font-black text-gray-900 dark:text-white uppercase mb-4 leading-tight">{selectedItem.title}</h3>
+              <div className="flex justify-center gap-4 mb-8">
+                 <span className="text-[10px] font-black uppercase px-3 py-1 rounded-md bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-white/60">{selectedItem.type}</span>
+                 <span className="text-[10px] font-black uppercase px-3 py-1 rounded-md bg-primary-gold/10 text-primary-gold">{selectedItem.date}</span>
+              </div>
+              <p className="text-sm text-gray-500 dark:text-primary-offwhite/70 font-body mb-8 leading-relaxed italic">"{selectedItem.desc}"</p>
+              <button onClick={() => setSelectedItem(null)} className="w-full py-4 bg-primary-gold text-primary-navy font-black text-sm uppercase tracking-widest rounded-2xl shadow-lg shadow-primary-gold/20 hover:scale-105 transition-all">Dismiss Broadcast</button>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

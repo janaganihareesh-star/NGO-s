@@ -49,7 +49,7 @@ const AIChatbot = () => {
       { keys: ['who', 'what', 'ngo', 'lakshmi'], res: "Lakshmi NGO is more than a foundation; we are a protective nexus for Mumbai's most vulnerable. We serve women, children, the elderly, LGBTQ+ individuals, and the environment. Since 2014, we've focused on restoring dignity and building a sustainable future." },
       { keys: ['volunteer', 'join', 'help'], res: "We are always looking for passionate Guardians! To volunteer, head to our 'Get Involved' section on the homepage and complete our 4-step digital vetting process. You can assist in slum education, field work, or admin tasks." },
       { keys: ['donate', 'money', 'sponsor'], res: "Your contribution directly saves lives. You can donate via UPI, card, or direct transfer on our 'Donate Now' portal. 100% of public donations go straight to our field missions. Would you like to sponsor a specific cause today?" },
-      { keys: ['women', 'safety', 'harassment'], res: "Women safety is our highest priority. We run 24/7 safe-spaces and empowerment workshops. If you'd like to report a safety concern, just specify 'urgent report' and I'll log it for immediate field officer review." },
+      { keys: ['women', 'safety', 'harassment'], res: "Women safety is our highest priority. We run 24/7 safe-spaces and empowerment workshops. If you'd like to report a safety concern, just specify 'urgent report' and I'll log it for immediate administrative review." },
       { keys: ['lgbtq', 'gay', 'pride', 'rights'], res: "We are one of the few NGOs in Mumbai dedicated to LGBTQ+ rights and mental health support. We provide a safe-haven and awareness campaigns to fight discrimination." },
       { keys: ['child', 'orphan', 'education'], res: "Our 'Beti Bachao' and 'Slum Education' drives impact over 5,000 children annually. We provide tech-enabled learning materials and safe shelters for vulnerable youth." },
       { keys: ['old', 'elderly', 'senior'], res: "Dignity for seniors is vital. We collaborate with elderly care centers to provide medical aid, community engagement, and psychological support for abandoned seniors." },
@@ -192,9 +192,9 @@ const AIChatbot = () => {
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-primary-gold flex items-center justify-center text-primary-navy font-black shadow-lg shadow-primary-gold/20">L</div>
                 <div>
-                  <h3 className="text-white font-heading font-bold text-sm tracking-widest uppercase">Lakshmi Assistant</h3>
-                  <p className="text-emerald-500 text-[10px] uppercase tracking-widest font-black flex items-center gap-1">
-                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Intelligence Optimized
+                  <h3 className="text-white font-heading font-black text-sm tracking-widest uppercase">Lakshmi Assistant</h3>
+                  <p className="text-emerald-400 text-[10px] uppercase tracking-widest font-black flex items-center gap-1">
+                     <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]" /> Intelligence Optimized
                   </p>
                 </div>
               </div>
@@ -212,10 +212,10 @@ const AIChatbot = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body ${
+                   <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body shadow-xl ${
                     msg.role === 'user' 
-                      ? 'bg-primary-gold text-primary-navy font-bold rounded-tr-none shadow-xl' 
-                      : 'bg-white/5 text-primary-offwhite/90 rounded-tl-none border border-white/10 backdrop-blur-md'
+                      ? 'bg-primary-gold text-[#0A0A0F] font-black rounded-tr-none' 
+                      : 'bg-white/10 text-white rounded-tl-none border border-white/20 backdrop-blur-md shadow-black/20'
                   }`}>
                     {msg.content}
                   </div>
@@ -239,7 +239,7 @@ const AIChatbot = () => {
                   <button
                     key={reply}
                     onClick={() => handleSend(reply)}
-                    className="whitespace-nowrap px-4 py-2 rounded-xl border border-primary-gold/10 text-[9px] text-primary-gold font-black hover:bg-primary-gold/10 transition-all uppercase tracking-[0.2em]"
+                     className="whitespace-nowrap px-4 py-2 rounded-xl border border-primary-gold/30 text-[9px] text-primary-gold font-black hover:bg-primary-gold hover:text-primary-navy transition-all uppercase tracking-[0.2em]"
                   >
                     {reply}
                   </button>
@@ -259,8 +259,8 @@ const AIChatbot = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="Ask anything..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 pr-12 text-sm focus:border-primary-gold outline-none text-white italic placeholder:text-gray-600 transition-all"
+                     placeholder="Ask anything about our missions..."
+                    className="w-full bg-white/10 border border-white/20 rounded-xl p-4 pr-12 text-sm focus:border-primary-gold outline-none text-white font-bold placeholder:text-white/40 transition-all shadow-inner"
                   />
                   <button
                     onClick={() => handleSend()}

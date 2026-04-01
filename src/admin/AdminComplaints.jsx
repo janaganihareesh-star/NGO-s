@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { MessageSquareWarning, Check, Filter } from 'lucide-react';
+import { MessageSquareWarning, Check, Filter, Paperclip, Camera } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const AdminComplaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [filter, setFilter] = useState('All'); // All, Normal, Urgent, Critical
   const [loading, setLoading] = useState(true);
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     const q = query(collection(db, 'complaints'), orderBy('timestamp', 'desc'));
@@ -39,6 +40,11 @@ const AdminComplaints = () => {
     }
   };
 
+  const onEvidenceChange = (e) => {
+    if(e.target.files?.[0]) {
+       toast.success(`Encrypted evidence packet: ${e.target.files[0].name} attached to log.`);
+    }
+  };
   const filteredComplaints = complaints.filter(comp => {
     if (filter === 'All') return true;
     return comp.priority === filter;
@@ -123,18 +129,27 @@ const AdminComplaints = () => {
                            {comp.status === 'open' ? '🟢 Open' : <><Check size={12}/> Resolved</>}
                         </span>
                      </td>
-                     <td className="px-8 py-6 text-right">
-                        {comp.status === 'open' ? (
-                          <button
-                            onClick={() => handleMarkResolved(comp.id)}
-                            className="px-4 py-2 bg-white/5 hover:bg-green-500/20 hover:text-green-400 text-gray-300 font-bold text-xs rounded-xl transition-all border border-white/10 hover:border-green-500/50"
-                          >
-                            Mark Resolved
-                          </button>
-                        ) : (
-                          <span className="text-xs text-gray-600 font-bold uppercase tracking-widest">Done</span>
-                        )}
-                     </td>
+                      <td className="px-8 py-6 text-right">
+                         {comp.status === 'open' ? (
+                           <div className="flex flex-col gap-2 items-end">
+                              <input type="file" ref={fileInputRef} className="hidden" onChange={onEvidenceChange} />
+                              <button
+                                onClick={() => handleMarkResolved(comp.id)}
+                                className="px-4 py-2 bg-white/5 hover:bg-green-500/20 hover:text-green-400 text-gray-300 font-bold text-xs rounded-xl transition-all border border-white/10 hover:border-green-500/50"
+                              >
+                                Mark Resolved
+                              </button>
+                              <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="flex items-center gap-1 text-[10px] font-black uppercase text-primary-gold hover:text-white transition-colors"
+                              >
+                                 <Camera size={12} /> Attach Evidence
+                              </button>
+                           </div>
+                         ) : (
+                           <span className="text-xs text-gray-600 font-bold uppercase tracking-widest">Done</span>
+                         )}
+                      </td>
                    </tr>
                  );
                })

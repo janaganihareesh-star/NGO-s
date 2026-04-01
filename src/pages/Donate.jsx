@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { db } from '../firebase/config';
 import { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import SEO from '../components/SEO';
+import { toast } from 'react-toastify';
 
 const donationAmounts = [
   { amount: 100, label: "Starter" },
@@ -55,13 +56,19 @@ const Donate = () => {
     const amountToPay = customAmount ? Number(customAmount) : selectedAmount;
     if (!amountToPay || amountToPay <= 0) return;
 
+    // Validation: Donor identity is now mandatory
+    if (!donorName.trim() || !donorEmail.trim()) {
+      toast.warning("Please enter valid details (Full Name & Email)");
+      return;
+    }
+
     setIsProcessing(true);
 
     // Simulated Secure Payment Logic (Direct to Firestore)
     setTimeout(async () => {
       try {
         await addDoc(collection(db, 'donations'), {
-          donorName: donorName.trim() || "Anonymous",
+          donorName: donorName.trim(), // Mandatory real name
           email: donorEmail,
           amount: amountToPay,
           method: paymentMethod,
@@ -80,8 +87,9 @@ const Donate = () => {
         });
       } catch (error) {
         console.error("Error saving donation:", error);
-        setIsProcessing(false);
         toast.error("Internal sync error. Please try again.");
+      } finally {
+        setIsProcessing(false);
       }
     }, 1500);
   };
@@ -238,7 +246,7 @@ const Donate = () => {
                       placeholder="Enter custom amount..."
                       className="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary-gold text-white font-bold peer placeholder-transparent"
                     />
-                    <label className="absolute left-4 top-4 text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-[-1rem] peer-focus:text-[10px] peer-focus:text-primary-gold bg-[#0A0F1E] px-1">Optional Custom Amount (₹)</label>
+                    <label className="absolute left-4 top-4 text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:top-[-1rem] peer-focus:text-[10px] peer-focus:text-primary-gold bg-[#0A0F1E] px-1">Custom Amount (₹)</label>
                   </div>
                 </div>
 
@@ -249,14 +257,14 @@ const Donate = () => {
                       type="text"
                       value={donorName}
                       onChange={(e) => setDonorName(e.target.value)}
-                      placeholder="Full Name (Optional for Anonymous)"
+                      placeholder="Enter Your Full Name"
                       className="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary-gold text-white text-sm"
                     />
                     <input 
                       type="email"
                       value={donorEmail}
                       onChange={(e) => setDonorEmail(e.target.value)}
-                      placeholder="Email Address (Optional)"
+                      placeholder="Enter Your Email Address"
                       className="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-primary-gold text-white text-sm"
                     />
                 </div>
@@ -341,7 +349,7 @@ const Donate = () => {
                       </div>
                       <div className="flex-1">
                         <p className="text-white font-bold text-sm">
-                          {donor.donorName || "Anonymous"} <span className="text-gray-400 font-normal">donated</span> <span className="text-primary-gold">₹{donor.amount}</span>
+                          {donor.donorName} <span className="text-gray-400 font-normal">donated</span> <span className="text-primary-gold">₹{donor.amount}</span>
                         </p>
                         <p className="text-gray-500 text-xs mt-0.5">{getRelativeTime(donor.timestamp)}</p>
                       </div>

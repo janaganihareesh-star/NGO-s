@@ -2,6 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, Clock, Star, Users, ArrowRight, CheckCircle, Info } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../firebase/config';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 
 const VolunteerCampaigns = () => {
   const campaigns = [
@@ -35,8 +39,59 @@ const VolunteerCampaigns = () => {
     }
   ];
 
+  const { currentUser } = useAuth();
+  const [joinedCampaigns, setJoinedCampaigns] = React.useState(new Set());
+  const [isSyncing, setIsSyncing] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchRSVPs = async () => {
+      if (!currentUser?.uid) return;
+      try {
+        const q = query(collection(db, 'campaign_rsvps'), where('volunteerId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        const joinedSet = new Set(snap.docs.map(doc => doc.data().campaignId));
+        setJoinedCampaigns(joinedSet);
+      } catch (err) { console.warn("RSVP fetch failed."); }
+    };
+    fetchRSVPs();
+  }, [currentUser]);
+
+  const handleJoinCampaign = async (camp) => {
+    if (joinedCampaigns.has(camp.id)) return;
+    setIsSyncing(true);
+    try {
+      await addDoc(collection(db, 'campaign_rsvps'), {
+        volunteerId: currentUser.uid,
+        volunteerName: currentUser.name,
+        campaignId: camp.id,
+        campaignTitle: camp.title,
+        status: 'joined',
+        timestamp: serverTimestamp()
+      });
+      
+      try {
+        const userRef = doc(db, 'users', currentUser.uid);
+        await updateDoc(userRef, { impactPoints: increment(100) });
+      } catch(e) {}
+
+      setJoinedCampaigns(prev => new Set([...prev, camp.id]));
+      toast.success(`Mission Active: Joining ${camp.title}`);
+    } catch (err) {
+      toast.error("Deployment failed. Check network.");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleMapRedirect = (loc) => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc + ", Mumbai")}`, '_blank');
+    const exactLocMap = {
+      'Dharavi Sector 4': 'Dharavi+Sector+4,Mumbai,Maharashtra',
+      'Juhu Beach': 'Juhu+Beach,Mumbai,Maharashtra',
+      'Kandivali East': 'Kandivali+East,Mumbai,Maharashtra',
+      'Worli Koliwada': 'Worli+Koliwada,Mumbai,Maharashtra'
+    };
+    const query = exactLocMap[loc] || encodeURIComponent(loc + ", Mumbai");
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
   return (
@@ -114,10 +169,22 @@ const VolunteerCampaigns = () => {
                      +{camp.volunteers - 3}
                   </div>
                </div>
-               <button className="px-8 py-3 bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-primary-gold hover:text-gray-900 transition-all flex items-center gap-2">
-                  Join Campaign <ArrowRight size={14} />
-               </button>
-            </div>
+                <button 
+                  onClick={() => handleJoinCampaign(camp)}
+                  disabled={isSyncing || joinedCampaigns.has(camp.id)}
+                  className={`px-8 py-3 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all flex items-center gap-2 ${
+                    joinedCampaigns.has(camp.id)
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:bg-primary-gold hover:text-gray-900'
+                  }`}
+                >
+                   {joinedCampaigns.has(camp.id) ? (
+                     <><CheckCircle size={14} /> Mission Joined</>
+                   ) : (
+                     <>Join Campaign <ArrowRight size={14} /></>
+                   )}
+                </button>
+             </div>
           </motion.div>
         ))}
       </div>

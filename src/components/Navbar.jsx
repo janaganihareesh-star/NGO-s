@@ -54,7 +54,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center gap-10">
+        <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
             <div
               key={link.name}
@@ -120,7 +120,7 @@ const Navbar = () => {
           {currentUser ? (
             <div className="flex items-center gap-3">
               <Link
-                to={currentUser.role === 'admin' ? '/admin' : currentUser.role === 'officer' ? '/officer' : '/volunteer-dashboard'}
+                to={currentUser.role === 'admin' ? '/admin' : '/volunteer-dashboard'}
                 className="px-6 py-2 bg-white/5 border border-white/10 text-white font-bold rounded-full hover:bg-primary-gold hover:text-primary-navy transition-all text-xs uppercase tracking-widest"
               >
                 Dashboard
@@ -191,7 +191,7 @@ const Navbar = () => {
             <div className="mt-auto flex flex-col gap-4">
               {currentUser ? (
                 <Link
-                  to={currentUser.role === 'admin' ? '/admin' : currentUser.role === 'officer' ? '/officer' : '/volunteer-dashboard'}
+                  to={currentUser.role === 'admin' ? '/admin' : '/volunteer-dashboard'}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full py-5 bg-white/5 border border-white/20 text-white font-black text-center rounded-2xl text-xl"
                 >

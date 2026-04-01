@@ -31,7 +31,7 @@ const Register = () => {
       toast.success(`Welcome to the mission, ${user.name}!`);
       
       if (user.role === 'admin') navigate('/admin');
-      else if (user.role === 'officer') navigate('/officer');
+
       else navigate('/volunteer-dashboard');
     } catch (err) {
       toast.error(err.message);
@@ -123,7 +123,7 @@ const Register = () => {
                   className={"w-full p-4 rounded-xl outline-none font-bold pl-12 appearance-none cursor-pointer " + inputClass}
                 >
                   <option value="user" className="bg-[#0A0A0F]">Volunteer / Citizen</option>
-                  <option value="officer" className="bg-[#0A0A0F]">Field Officer</option>
+
                   <option value="admin" className="bg-[#0A0A0F]">System Admin</option>
                 </select>
                 <Briefcase size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-gold pointer-events-none" />
@@ -131,29 +131,6 @@ const Register = () => {
             </div>
 
             <AnimatePresence mode="wait">
-              {formData.role === 'officer' && (
-                <motion.div 
-                  key="officer-fields"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-2 md:col-span-2"
-                >
-                  <label className={"text-[10px] font-black uppercase tracking-widest " + labelClass}>Assigned Region</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      required
-                      value={formData.region}
-                      onChange={(e) => setFormData({...formData, region: e.target.value})}
-                      className={"w-full p-4 rounded-xl outline-none font-bold pl-12 " + inputClass}
-                      placeholder="e.g. Maharashtra East"
-                    />
-                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-gold" />
-                  </div>
-                </motion.div>
-              )}
-
               {formData.role === 'user' && (
                 <motion.div 
                   key="volunteer-fields"

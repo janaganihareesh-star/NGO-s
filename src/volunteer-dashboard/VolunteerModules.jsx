@@ -4,6 +4,9 @@ import { Shield, BookOpen, Clock, Play, CheckCircle, Award, Star, ListChecks } f
 import SEO from '../components/SEO';
 
 const VolunteerModules = () => {
+  const [activeModule, setActiveModule] = React.useState(null);
+  const [showProgress, setShowProgress] = React.useState(false);
+  
   const modules = [
     { 
       id: 1, title: 'Slum Outreach Safety 101', type: 'Certification', 
@@ -83,7 +86,10 @@ const VolunteerModules = () => {
                               Review Content
                            </button>
                         ) : (
-                           <button className="px-6 py-2 bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary-gold hover:text-gray-900 transition-all shadow-lg flex items-center gap-2 group">
+                           <button 
+                             onClick={() => setActiveModule(mod)}
+                             className="px-6 py-2 bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary-gold hover:text-gray-900 transition-all shadow-lg flex items-center gap-2 group"
+                           >
                               Continue Module <Play size={10} className="fill-current group-hover:scale-125 transition-transform" />
                            </button>
                         )}
@@ -108,10 +114,54 @@ const VolunteerModules = () => {
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest">2 / 4 Modules</span>
                </div>
-               <button className="w-full py-4 bg-white font-black uppercase tracking-widest text-[10px] rounded-xl hover:scale-105 transition-all shadow-lg text-black">View Certificate Progress</button>
+               <button 
+                  onClick={() => setShowProgress(true)}
+                  className="w-full py-4 bg-white font-black uppercase tracking-widest text-[10px] rounded-xl hover:scale-105 transition-all shadow-lg text-black"
+                >
+                  View Certificate Progress
+                </button>
             </div>
          </div>
       </div>
+
+      {/* Module Viewer Modal */}
+      {activeModule && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-6 animate-in zoom-in duration-300">
+           <div className="w-full max-w-4xl aspect-video bg-gray-900 rounded-[3rem] overflow-hidden border border-white/10 relative shadow-2xl">
+              <div className="absolute top-6 right-6 z-30">
+                 <button onClick={() => setActiveModule(null)} className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-rose-500 transition-colors">✕</button>
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center">
+                 <div className="p-6 bg-primary-gold/20 rounded-full mb-8 animate-pulse">
+                    <Play size={48} className="text-primary-gold fill-current" />
+                 </div>
+                 <h3 className="text-3xl font-heading font-black text-white uppercase mb-4 tracking-wider">{activeModule.title}</h3>
+                 <p className="text-primary-offwhite/50 mb-12 max-w-xl font-body">Now Streaming: Advanced safety protocols and coastal risk assessment. Keep focus to earn {activeModule.points} points.</p>
+                 <div className="w-full max-w-md h-1 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary-gold animate-[shimmer_10s_infinite_linear]" style={{ width: '45%' }} />
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* Progress Modal */}
+      {showProgress && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+           <div className="w-full max-w-lg glass p-10 rounded-[3rem] border border-white/20 relative animate-in slide-in-from-bottom-8">
+              <h3 className="text-3xl font-heading font-black text-white uppercase mb-8 text-center">Certificate <span className="text-primary-gold">Path</span></h3>
+              <div className="space-y-6">
+                 {modules.map(m => (
+                   <div key={m.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                      <CheckCircle size={20} className={m.status === 'Completed' ? 'text-emerald-500' : 'text-white/20'} />
+                      <span className={`text-xs font-black uppercase tracking-widest ${m.status === 'Completed' ? 'text-white' : 'text-white/40'}`}>{m.title}</span>
+                   </div>
+                 ))}
+              </div>
+              <button onClick={() => setShowProgress(false)} className="w-full py-4 mt-10 bg-primary-gold text-primary-navy font-black text-xs uppercase tracking-widest rounded-2xl">Return to Training</button>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

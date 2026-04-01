@@ -94,7 +94,22 @@ const VolunteerImpact = () => {
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Cities Covered</p>
                </div>
             </div>
-            <button className="mt-12 px-10 py-4 bg-primary-gold text-gray-900 font-black uppercase tracking-widest text-xs rounded-xl hover:scale-105 transition-all w-fit flex items-center gap-2">
+            <button 
+              onClick={() => {
+                toast.info("Generating your Annual Impact Summary...");
+                setTimeout(() => {
+                  const content = "LAKSHMI NGO - IMPACT REPORT 2024\n\nPoints: 1200\nHours: 42\nStatus: Dedicated Advocate";
+                  const blob = new Blob([content], { type: 'text/plain' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `Impact_Report_${currentUser?.name || 'Volunteer'}.txt`;
+                  a.click();
+                  toast.success("Impact Report Downloaded Successfully!");
+                }, 2000);
+              }}
+              className="mt-12 px-10 py-4 bg-primary-gold text-gray-900 font-black uppercase tracking-widest text-xs rounded-xl hover:scale-105 transition-all w-fit flex items-center gap-2"
+            >
                Download Impact Report <ArrowRight size={14} />
             </button>
          </div>

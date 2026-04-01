@@ -66,8 +66,18 @@ const VolunteerHub = () => {
   };
 
   const handleLocationClick = (loc) => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc + ", Mumbai")}`, '_blank');
+    // Advanced: Use coordinates for 'exact' location if possible, otherwise descriptive strings
+    const exactLocMap = {
+      'Dharavi Sector 4': 'Dharavi+Sector+4,Mumbai,Maharashtra',
+      'Juhu Beach': 'Juhu+Beach,Mumbai,Maharashtra',
+      'Kandivali East': 'Kandivali+East,Mumbai,Maharashtra',
+      'Worli Koliwada': 'Worli+Koliwada,Mumbai,Maharashtra'
+    };
+    const query = exactLocMap[loc] || encodeURIComponent(loc + ", Mumbai");
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
+
+  const [selectedDetails, setSelectedDetails] = useState(null);
 
   const handleViewMap = () => {
     window.open(`https://www.google.com/maps/search/?api=1&query=NGO+vulnerable+areas+Mumbai`, '_blank');
@@ -132,7 +142,12 @@ const VolunteerHub = () => {
                           <Clock size={12}/> SAT 10:00 AM
                        </p>
                        <button 
-                         onClick={() => navigate('/volunteer-dashboard/campaigns')}
+                         onClick={() => setSelectedDetails({
+                           title: 'Orphanage Tech Drive',
+                           desc: 'A monthly initiative to teach digital skills to 50+ children at the local municipal orphanage.',
+                           date: 'SAT 10:00 AM',
+                           loc: 'Mumbai Central Hub'
+                         })}
                          className="w-full py-2 bg-orange-500/10 text-orange-600 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-orange-500 hover:text-white transition-colors"
                        >
                           View Details
@@ -207,6 +222,7 @@ const VolunteerHub = () => {
                           {joinedCampaigns.has(camp.id) ? (
                             <span className="flex items-center gap-2 tracking-tighter"><CheckCircle size={14}/> Mission Joined</span>
                           ) : 'RSVP Now'}
+                          View Details
                         </button>
                      </div>
                   </div>
@@ -214,6 +230,38 @@ const VolunteerHub = () => {
             </div>
          </div>
       </div>
+
+      {/* Details Modal */}
+      {selectedDetails && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="w-full max-w-lg bg-white dark:bg-[#0A0A0F] rounded-[3rem] border border-gray-200 dark:border-white/10 p-10 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary-gold/10 blur-[60px] rounded-full pointer-events-none" />
+              <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-3xl font-heading font-black text-gray-900 dark:text-white uppercase leading-tight">{selectedDetails.title}</h3>
+                    <button onClick={() => setSelectedDetails(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors">✕</button>
+                 </div>
+                 <p className="text-sm text-gray-500 dark:text-primary-offwhite/70 font-body mb-8 leading-relaxed">{selectedDetails.desc}</p>
+                 <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                       <p className="text-[10px] font-black uppercase text-primary-gold mb-1">Time & Date</p>
+                       <p className="text-xs font-bold text-gray-900 dark:text-white">{selectedDetails.date}</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                       <p className="text-[10px] font-black uppercase text-primary-gold mb-1">Location</p>
+                       <p className="text-xs font-bold text-gray-900 dark:text-white">{selectedDetails.loc}</p>
+                    </div>
+                 </div>
+                 <button 
+                   onClick={() => { handleRSVP(selectedDetails); setSelectedDetails(null); }} 
+                   className="w-full py-4 bg-primary-gold text-primary-navy font-black text-sm uppercase tracking-widest rounded-2xl"
+                 >
+                   Confirm Mission
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
