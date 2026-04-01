@@ -29,6 +29,12 @@ const VolunteerAnnouncements = () => {
       date: 'Oct 10, 2024', status: 'Success',
       desc: 'Congratulations to everyone who participated in the Dharavi drive! We reached 500+ children in just 2 days.',
       icon: <CheckCircle className="text-emerald-500" />
+    },
+    {
+      id: 5, title: 'New Training Module: Disaster Response', type: 'Course',
+      date: 'Oct 05, 2024', status: 'General',
+      desc: 'A new advanced certification for Disaster Response is now live in the Training Nexus. Earn up to 500 Impact Points.',
+      icon: <Bell className="text-blue-400" />
     }
   ];
 

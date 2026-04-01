@@ -31,7 +31,15 @@ const MetricCard = ({ title, value, icon, trend }) => {
 const AdminDashboard = () => {
   const { isDarkMode } = useTheme();
   // Metrics
-  const [metrics, setMetrics] = useState({ volunteers: 0, donations: 0, openComplaints: 0, projects: 5 });
+  const [metrics, setMetrics] = useState({ 
+    volunteers: 0, 
+    donationsToday: 0, 
+    donationsMonth: 0, 
+    donationsTotal: 0, 
+    openComplaints: 0, 
+    resolvedComplaints: 0,
+    projects: 5 
+  });
   
   // Tables
   const [recentVolunteers, setRecentVolunteers] = useState([]);
@@ -63,41 +71,56 @@ const AdminDashboard = () => {
 
     // 2. Fetch live Donations
     const unsubDonations = onSnapshot(collection(db, 'donations'), (snapshot) => {
-      let total = 0;
+      let total = 0, today = 0, month = 0;
       const monthlyData = new Array(6).fill(0);
-      const currentMonth = new Date().getMonth();
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
       
       snapshot.forEach(doc => {
         const data = doc.data();
-        total += Number(data.amount) || 0;
+        const amt = Number(data.amount) || 0;
+        total += amt;
         
         if (data.timestamp) {
            const date = data.timestamp.toDate();
-           const monthDiff = currentMonth - date.getMonth() + (12 * (new Date().getFullYear() - date.getFullYear()));
+           // Today
+           if (date.toDateString() === now.toDateString()) today += amt;
+           // Month
+           if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) month += amt;
+
+           const monthDiff = (currentYear - date.getFullYear()) * 12 + (currentMonth - date.getMonth());
            if (monthDiff >= 0 && monthDiff < 6) {
-              monthlyData[5 - monthDiff] += Number(data.amount) || 0;
+              monthlyData[5 - monthDiff] += amt;
            }
         }
       });
-      setMetrics(prev => ({ ...prev, donations: total }));
+      setMetrics(prev => ({ 
+        ...prev, 
+        donationsTotal: total, 
+        donationsToday: today, 
+        donationsMonth: month 
+      }));
       setDonationsChartData(monthlyData);
     });
 
     // 3. Fetch live Complaints
     const unsubComplaints = onSnapshot(collection(db, 'complaints'), (snapshot) => {
       let openCount = 0;
+      let resolvedCount = 0;
       let normal = 0, urgent = 0, critical = 0;
       
       snapshot.forEach(doc => {
         const data = doc.data();
         if (data.status === 'open') openCount++;
+        else resolvedCount++;
         
         if (data.priority === 'Critical') critical++;
         else if (data.priority === 'Urgent') urgent++;
         else normal++;
       });
       
-      setMetrics(prev => ({ ...prev, openComplaints: openCount }));
+      setMetrics(prev => ({ ...prev, openComplaints: openCount, resolvedComplaints: resolvedCount }));
       setComplaintPriorityData([normal, urgent, critical]);
     });
 
@@ -148,72 +171,82 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         <MetricCard title="Total Volunteers" value={metrics.volunteers} icon={<Users />} trend="+12%" />
-        <MetricCard title="Total Donations" value={`₹${metrics.donations.toLocaleString('en-IN')}`} icon={<DollarSign />} trend="+8%" />
-        <MetricCard title="Open Complaints" value={metrics.openComplaints} icon={<MessageSquareWarning />} trend={metrics.openComplaints > 0 ? 'Action Req' : '-5%'} />
-        <MetricCard title="Active Projects" value={metrics.projects} icon={<FolderOpen />} trend="Stable" />
-        <div className={`glass p-6 rounded-3xl border-t-2 border-emerald-500 xl:col-span-1 ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200'} flex flex-col justify-between shadow-xl`}>
+        <MetricCard title="Today's Funding" value={`₹${metrics.donationsToday.toLocaleString('en-IN')}`} icon={<DollarSign />} trend="Today" />
+        <MetricCard title="Monthly Revenue" value={`₹${metrics.donationsMonth.toLocaleString('en-IN')}`} icon={<BarElement />} trend="Month" />
+        <MetricCard title="Global AllTime" value={`₹${metrics.donationsTotal.toLocaleString('en-IN')}`} icon={<DollarSign />} trend="All Time" />
+        <div className={`glass p-6 rounded-3xl border-t-2 border-emerald-500 xl:col-span-1 ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-xl shadow-emerald-500/5'} flex flex-col justify-between`}>
            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Annual Goal Progress</p>
-              <h4 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>64%</h4>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Resolution Archive</p>
+              <h4 className={`text-2xl font-black ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                {metrics.resolvedComplaints} / {metrics.openComplaints + metrics.resolvedComplaints}
+              </h4>
            </div>
            <div className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-full mt-4 overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full" style={{ width: '64%' }} />
+              <div 
+                className="h-full bg-emerald-500 rounded-full" 
+                style={{ width: `${(metrics.resolvedComplaints / (metrics.openComplaints + metrics.resolvedComplaints || 1)) * 100}%` }} 
+              />
            </div>
-           <p className="text-[8px] font-bold text-gray-400 mt-2 uppercase tracking-tight">₹1.2M / ₹2.0M Target</p>
+           <p className="text-[8px] font-bold text-gray-400 mt-2 uppercase tracking-tight">Resolved Issues vs Open Cases</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:h-[400px]">
-        <div className={`glass p-6 rounded-3xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200 bg-white shadow-sm'} lg:col-span-1 h-full flex flex-col`}>
-          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Monthly Donations (₹)</h3>
-          <div className="flex-1 min-h-[250px] lg:min-h-0">
-            <Line 
-              data={{
-                labels: getMonthLabels(),
-                datasets: [{
-                  label: 'Donations', 
-                  data: donationsChartData, 
-                  borderColor: '#C9933A', 
-                  backgroundColor: 'rgba(201, 147, 58, 0.1)', 
-                  fill: true,
-                  tension: 0.4, 
-                  borderWidth: 4,
-                  pointBackgroundColor: '#C9933A',
-                  pointBorderColor: '#fff',
-                  pointHoverRadius: 6
-                }]
-              }} 
-              options={chartOptions} 
-            />
-          </div>
-        </div>
-        
-        <div className={`glass p-6 rounded-3xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200 bg-white shadow-sm'} lg:col-span-1 h-full flex flex-col`}>
-          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Volunteers by City</h3>
-          <div className="flex-1 min-h-[250px] lg:min-h-0">
-            <Bar 
-              data={{
-                labels: volunteerCityData.labels.length ? volunteerCityData.labels : ['No Data'],
-                datasets: [{
-                  label: 'Volunteers', data: volunteerCityData.data.length ? volunteerCityData.data : [1], backgroundColor: '#C9933A', borderRadius: 6
-                }]
-              }} 
-              options={chartOptions} 
-            />
-          </div>
+      {/* COMPLAINTS SECTION HIGHER AS REQUESTED */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold lg:col-span-2 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
+           <div className="flex justify-between items-center mb-6">
+             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>Recent Complaints</h3>
+             <a href="/admin/complaints" className="text-xs text-primary-gold hover:text-white transition-colors uppercase font-bold">View All →</a>
+           </div>
+           <div className="overflow-x-auto no-scrollbar">
+             <table className="w-full text-left border-collapse min-w-[500px]">
+               <thead>
+                 <tr className={`${isDarkMode ? 'border-b border-white/20' : 'border-b border-gray-200'}`}>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Priority</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Transcript</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Status</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {recentComplaints.map(comp => (
+                   <tr 
+                     key={comp.id} 
+                     onClick={() => setSelectedComplaint(comp)}
+                     className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors cursor-pointer group`}
+                   >
+                     <td className="py-4">
+                        <span className={`text-[10px] px-2 py-1 rounded-full uppercase font-black tracking-widest ${
+                          comp.priority === 'Critical' ? 'bg-red-500/20 text-red-500' :
+                          comp.priority === 'Urgent' ? 'bg-orange-500/20 text-orange-500' : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {comp.priority || 'Normal'}
+                        </span>
+                     </td>
+                     <td className={`py-4 text-xs ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-[200px] truncate pr-4 italic group-hover:text-primary-gold transition-colors font-body italic`}>"{comp.transcript}"</td>
+                     <td className="py-4 text-xs font-black uppercase">
+                        <span className={`px-3 py-1 rounded-full text-[10px] border ${comp.status === 'open' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 'bg-green-500/10 text-green-500 border-green-500/20'}`}>
+                           {comp.status === 'open' ? '🔴 Open' : '🟢 Solved'}
+                        </span>
+                     </td>
+                   </tr>
+                 ))}
+                 {recentComplaints.length === 0 && <tr><td colSpan="3" className="py-8 text-center text-gray-500">No recent incidents.</td></tr>}
+               </tbody>
+             </table>
+           </div>
         </div>
 
         <div className={`glass p-6 rounded-3xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200 bg-white shadow-sm'} lg:col-span-1 h-full flex flex-col`}>
-          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Complaints by Priority</h3>
-          <div className="flex-1 min-h-[250px] lg:min-h-0">
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Incident Weight (Priority)</h3>
+          <div className="flex-1 min-h-[250px]">
             <Doughnut 
               data={{
                 labels: ['Normal', 'Urgent', 'Critical'],
                 datasets: [{
                   data: complaintPriorityData.reduce((a, b) => a + b, 0) === 0 ? [1,1,1] : complaintPriorityData,
                   backgroundColor: ['#6B7280', '#F97316', '#EF4444'],
-                  borderWidth: 0,
-                  hoverOffset: 4
+                  offset: 15,
+                  hoverOffset: 20
                 }]
               }} 
               options={donutOptions} 
@@ -222,11 +255,50 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:min-h-[400px]">
+        <div className={`glass p-6 rounded-3xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200 bg-white shadow-sm'} lg:col-span-2 flex flex-col`}>
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Monthly Donations Bar (₹)</h3>
+          <div className="flex-1 min-h-[300px]">
+             <Bar 
+              data={{
+                labels: getMonthLabels(),
+                datasets: [{
+                  label: 'Funding', 
+                  data: donationsChartData, 
+                  backgroundColor: '#C9933A', 
+                  borderRadius: 8,
+                  hoverBackgroundColor: '#fff'
+                }]
+              }} 
+              options={chartOptions} 
+            />
+          </div>
+        </div>
+
+        <div className={`glass p-6 rounded-3xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200 bg-white shadow-sm'} lg:col-span-1 flex flex-col`}>
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold mb-4 uppercase text-sm tracking-widest`}>Regions Performance</h3>
+          <div className="flex-1 min-h-[300px]">
+            <Bar 
+              data={{
+                labels: volunteerCityData.labels.length ? volunteerCityData.labels : ['No Data'],
+                datasets: [{
+                  label: 'Activity', 
+                  data: volunteerCityData.data.length ? volunteerCityData.data : [1], 
+                  backgroundColor: ['#C9933A', '#EF4444', '#F97316', '#10B981', '#3B82F6'],
+                  borderRadius: 12
+                }]
+              }} 
+              options={chartOptions} 
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
+        <div className={`glass p-8 rounded-3xl border-t-4 border-emerald-500 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
            <div className="flex justify-between items-center mb-6">
              <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>Recent Volunteers</h3>
-             <a href="#" className="text-xs text-primary-gold hover:text-white transition-colors uppercase font-bold">View All →</a>
+             <a href="/volunteer" className="text-xs text-emerald-500 hover:text-white transition-colors uppercase font-bold">View Directory →</a>
            </div>
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">

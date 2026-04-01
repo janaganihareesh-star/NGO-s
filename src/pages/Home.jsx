@@ -10,7 +10,7 @@ import BlogGrid from '../components/BlogGrid';
 import GetInvolved from '../components/GetInvolved';
 import ContactSection from '../components/ContactSection';
 import SEO from '../components/SEO';
-import { Heart } from 'lucide-react';
+import { Heart, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -131,10 +131,24 @@ const Home = () => {
               © 2026 LAKSHMI NGO. REGISTERED UNDER NGO ACT 2014.
             </p>
             
-            <div className="flex justify-center gap-12 opacity-50">
-              {['Facebook', 'Instagram', 'Twitter', 'YouTube', 'LinkedIn'].map((social) => (
-                <a key={social} href="#" className="font-body text-[10px] uppercase tracking-widest hover:text-primary-gold transition-colors font-black">
-                  {social}
+            <div className="flex justify-center gap-10">
+              {[
+                { name: 'Facebook', icon: <Facebook size={22} />, color: 'hover:text-[#1877F2]' },
+                { name: 'Instagram', icon: <Instagram size={22} />, color: 'hover:text-[#E4405F]' },
+                { name: 'Twitter', icon: <Twitter size={22} />, color: 'hover:text-[#1DA1F2]' },
+                { name: 'YouTube', icon: <Youtube size={22} />, color: 'hover:text-[#FF0000]' },
+                { name: 'LinkedIn', icon: <Linkedin size={22} />, color: 'hover:text-[#0A66C2]' }
+              ].map((social) => (
+                <a 
+                  key={social.name} 
+                  href="#" 
+                  className={`group relative p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 transition-all duration-500 hover:scale-125 hover:-translate-y-2 ${social.color} hover:border-gray-400/30 hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.3)]`}
+                  aria-label={social.name}
+                >
+                  <div className="relative z-10 transition-transform duration-500 group-hover:rotate-[360deg]">
+                    {social.icon}
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
                 </a>
               ))}
             </div>

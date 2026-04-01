@@ -141,17 +141,18 @@ const VolunteerHub = () => {
                        <p className="text-xs font-bold text-gray-500 dark:text-primary-offwhite/50 tracking-widest uppercase mb-4 flex items-center gap-1">
                           <Clock size={12}/> SAT 10:00 AM
                        </p>
-                       <button 
-                         onClick={() => setSelectedDetails({
-                           title: 'Orphanage Tech Drive',
-                           desc: 'A monthly initiative to teach digital skills to 50+ children at the local municipal orphanage.',
-                           date: 'SAT 10:00 AM',
-                           loc: 'Mumbai Central Hub'
-                         })}
-                         className="w-full py-2 bg-orange-500/10 text-orange-600 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-orange-500 hover:text-white transition-colors"
-                       >
-                          View Details
-                       </button>
+                        <button 
+                          onClick={() => setSelectedDetails({
+                            id: 'commitment-1',
+                            title: 'Orphanage Tech Drive',
+                            desc: 'A monthly initiative to teach digital skills to 50+ children at the local municipal orphanage.',
+                            date: 'SAT 10:00 AM',
+                            loc: 'Mumbai Central Hub'
+                          })}
+                          className="w-full py-2 bg-orange-500/10 text-orange-600 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-orange-500 hover:text-white transition-colors"
+                        >
+                           View Details
+                        </button>
                     </div>
                  </div>
               </div>
@@ -210,20 +211,30 @@ const VolunteerHub = () => {
                         </div>
                      </div>
                      <div className="flex items-center mt-6 sm:mt-0 sm:pl-6 sm:border-l border-gray-200 dark:border-white/10">
-                        <button 
-                          onClick={() => handleRSVP(camp)}
-                          disabled={isSyncing || joinedCampaigns.has(camp.id)}
-                          className={`w-full sm:w-auto px-8 py-4 font-black uppercase tracking-widest text-xs rounded-xl transition-all shadow-lg ${
-                            joinedCampaigns.has(camp.id) 
-                            ? 'bg-emerald-500 text-white cursor-default' 
-                            : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:scale-105 active:scale-95'
-                          }`}
-                        >
-                          {joinedCampaigns.has(camp.id) ? (
-                            <span className="flex items-center gap-2 tracking-tighter"><CheckCircle size={14}/> Mission Joined</span>
-                          ) : 'RSVP Now'}
-                          View Details
-                        </button>
+                         <div className="flex flex-col gap-2 w-full sm:w-auto">
+                            <button 
+                              onClick={() => handleRSVP(camp)}
+                              disabled={isSyncing || joinedCampaigns.has(camp.id)}
+                              className={`px-8 py-3 font-black uppercase tracking-widest text-[10px] rounded-xl transition-all shadow-lg ${
+                                joinedCampaigns.has(camp.id) 
+                                ? 'bg-emerald-500 text-white cursor-default' 
+                                : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:scale-105'
+                              }`}
+                            >
+                              {joinedCampaigns.has(camp.id) ? (
+                                <span className="flex items-center gap-2"><CheckCircle size={12}/> Joined</span>
+                              ) : 'RSVP Now'}
+                            </button>
+                            <button 
+                              onClick={() => setSelectedDetails({
+                                ...camp,
+                                desc: camp.isUrgent ? 'URGENT: This mission requires immediate volunteer support for critical supply distribution.' : 'Join your local community in this essential outreach program.'
+                              })}
+                              className="px-8 py-2 border border-gray-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-gold rounded-xl transition-colors"
+                            >
+                               View Details
+                            </button>
+                         </div>
                      </div>
                   </div>
                ))}

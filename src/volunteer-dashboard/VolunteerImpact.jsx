@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Zap, Star, Shield, Trophy, Target, ArrowRight, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const VolunteerImpact = () => {
+  const { currentUser } = useAuth();
   const tiers = [
     { level: 1, title: 'Aspiring Guardian', range: '0 - 500 Pts', color: 'text-gray-400', bg: 'bg-gray-400/10', icon: <Zap size={24} /> },
     { level: 2, title: 'Dedicated Advocate', range: '501 - 2000 Pts', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: <Star size={24} />, isCurrent: true },

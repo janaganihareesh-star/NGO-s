@@ -209,11 +209,11 @@ const AdminDonations = () => {
           <table className="w-full text-left border-collapse min-w-[700px]">
             <thead className="bg-[#0A0F1E] sticky top-0 z-20">
               <tr>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Donor</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Amount</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Method</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Campaign</th>
-                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5 text-right w-48">Date</th>
+                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Donor Identity</th>
+                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Funds (₹)</th>
+                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Mechanism</th>
+                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Mission/Campaign</th>
+                <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5 text-right w-48">Date & Time</th>
               </tr>
             </thead>
             <tbody>
@@ -223,28 +223,28 @@ const AdminDonations = () => {
                  <tr><td colSpan="5" className="py-20 text-center text-gray-500">No records matched your search.</td></tr>
               ) : (
                  filtered.map((d) => (
-                   <tr key={d.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
-                     <td className="px-8 py-4">
-                        <p className="text-white font-bold text-sm">{d.donorName || "Anonymous"}</p>
-                        <p className="text-xs text-gray-500">{d.email || "No Email Provided"}</p>
-                     </td>
-                     <td className="px-8 py-4 font-black text-primary-gold tracking-widest text-lg">
-                        ₹{d.amount}
-                     </td>
-                     <td className="px-8 py-4">
-                        <span className="text-[10px] px-3 py-1 bg-white/10 rounded-lg text-white font-bold uppercase tracking-widest">
-                           {d.method || "System"}
-                        </span>
-                     </td>
-                     <td className="px-8 py-4">
-                        <span className="text-xs border border-white/10 px-2 py-1 rounded-full text-gray-400 uppercase tracking-widest">
-                           {d.campaignId || "general"}
-                        </span>
-                     </td>
-                     <td className="px-8 py-4 text-xs text-gray-400 font-medium text-right font-mono">
-                        {d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A'}
-                     </td>
-                   </tr>
+                    <tr key={d.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer font-body">
+                      <td className="px-8 py-4">
+                         <p className="text-white font-bold text-sm uppercase tracking-tight">{d.donorName || "Anonymous"}</p>
+                         <p className="text-[10px] text-primary-gold font-bold uppercase tracking-widest mt-1 opacity-60">{d.email || "Verification Pending"}</p>
+                      </td>
+                      <td className="px-8 py-4 font-black text-primary-gold tracking-widest text-lg">
+                         ₹{d.amount.toLocaleString('en-IN')}
+                      </td>
+                      <td className="px-8 py-4">
+                         <span className="text-[10px] px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-white font-black uppercase tracking-widest">
+                            {d.method || "System Gate"}
+                         </span>
+                      </td>
+                      <td className="px-8 py-4">
+                         <span className="text-[10px] border border-primary-gold/30 bg-primary-gold/5 px-3 py-1 rounded-full text-primary-gold font-black uppercase tracking-widest">
+                            {d.campaignId || "Global Welfare"}
+                         </span>
+                      </td>
+                      <td className="px-8 py-4 text-xs text-gray-400 font-bold text-right font-mono uppercase">
+                         {d.timestamp ? d.timestamp.toDate().toLocaleString('en-IN', { hour12: true }) : 'Processing...'}
+                      </td>
+                    </tr>
                  ))
               )}
             </tbody>

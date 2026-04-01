@@ -42,6 +42,7 @@ const VolunteerCampaigns = () => {
   const { currentUser } = useAuth();
   const [joinedCampaigns, setJoinedCampaigns] = React.useState(new Set());
   const [isSyncing, setIsSyncing] = React.useState(false);
+  const [selectedCampaign, setSelectedCampaign] = React.useState(null);
 
   React.useEffect(() => {
     const fetchRSVPs = async () => {
@@ -169,25 +170,77 @@ const VolunteerCampaigns = () => {
                      +{camp.volunteers - 3}
                   </div>
                </div>
-                <button 
-                  onClick={() => handleJoinCampaign(camp)}
-                  disabled={isSyncing || joinedCampaigns.has(camp.id)}
-                  className={`px-8 py-3 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all flex items-center gap-2 ${
-                    joinedCampaigns.has(camp.id)
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:bg-primary-gold hover:text-gray-900'
-                  }`}
-                >
-                   {joinedCampaigns.has(camp.id) ? (
-                     <><CheckCircle size={14} /> Mission Joined</>
-                   ) : (
-                     <>Join Campaign <ArrowRight size={14} /></>
-                   )}
-                </button>
+                 <div className="flex flex-col gap-2">
+                    <button 
+                      onClick={() => handleJoinCampaign(camp)}
+                      disabled={isSyncing || joinedCampaigns.has(camp.id)}
+                      className={`px-8 py-3 font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 ${
+                        joinedCampaigns.has(camp.id)
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:bg-primary-gold hover:text-gray-900'
+                      }`}
+                    >
+                       {joinedCampaigns.has(camp.id) ? (
+                         <><CheckCircle size={14} /> Mission Joined</>
+                       ) : (
+                         <>Join Campaign <ArrowRight size={14} /></>
+                       )}
+                    </button>
+                    <button 
+                      onClick={() => setSelectedCampaign(camp)}
+                      className="px-8 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-primary-gold transition-colors border border-transparent hover:border-primary-gold/20 rounded-xl"
+                    >
+                       View Details
+                    </button>
+                 </div>
              </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Details Modal */}
+      {selectedCampaign && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="w-full max-w-lg bg-white dark:bg-[#0A0A0F] rounded-[3rem] border border-gray-200 dark:border-white/10 p-10 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary-gold/10 blur-[60px] rounded-full pointer-events-none" />
+              <div className="relative z-10">
+                 <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-3xl font-heading font-black text-gray-900 dark:text-white uppercase leading-tight">{selectedCampaign.title}</h3>
+                    <button onClick={() => setSelectedCampaign(null)} className="p-2 text-gray-400 hover:text-rose-500 transition-colors">✕</button>
+                 </div>
+                 <p className="text-sm text-gray-500 dark:text-primary-offwhite/70 font-body mb-8 leading-relaxed">{selectedCampaign.desc}</p>
+                 
+                 <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                       <MapPin size={20} className="text-primary-gold" />
+                       <div>
+                          <p className="text-[10px] font-black uppercase text-gray-400">Target Zone</p>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight">{selectedCampaign.loc}</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                       <Calendar size={20} className="text-primary-gold" />
+                       <div>
+                          <p className="text-[10px] font-black uppercase text-gray-400">Scheduled Time</p>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-tight">{selectedCampaign.date}</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 <button 
+                   onClick={() => { handleJoinCampaign(selectedCampaign); setSelectedCampaign(null); }} 
+                   className={`w-full py-4 font-black text-sm uppercase tracking-widest rounded-2xl transition-all shadow-xl ${
+                     joinedCampaigns.has(selectedCampaign.id)
+                     ? 'bg-emerald-500 text-white cursor-default'
+                     : 'bg-primary-gold text-primary-navy hover:scale-105 active:scale-95'
+                   }`}
+                 >
+                   {joinedCampaigns.has(selectedCampaign.id) ? 'Already Enrolled' : 'Confirm Mission Participation'}
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -113,6 +113,11 @@ const VolunteerSidebar = ({ isOpen, setIsOpen }) => {
 
 const VolunteerLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { title: 'Safety Refresh Mandatory', desc: 'Complete Q4 module by Oct 31.', color: 'bg-rose-500' },
+    { title: 'Campaign Update: Juhu Beach', desc: 'Mission starting in 4 hours.', color: 'bg-primary-gold' },
+    { title: 'Impact Points Earned', desc: 'Received 120 points for Coastal Mission.', color: 'bg-emerald-500' }
+  ]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050508] font-body flex transition-colors">
@@ -136,41 +141,41 @@ const VolunteerLayout = () => {
              <div className="relative group">
                 <button className="p-3 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl border border-gray-200 dark:border-white/10 hover:border-primary-gold/50 transition-all relative">
                    <Bell size={20} />
-                   <div className="absolute top-0 right-0 w-3 h-3 bg-rose-500 rounded-full border-2 border-white dark:border-[#0A0A0F]" />
+                   {notifications.length > 0 && (
+                      <div className="absolute top-0 right-0 w-3 h-3 bg-rose-500 rounded-full border-2 border-white dark:border-[#0A0A0F]" />
+                   )}
                 </button>
                 
                 {/* Notifications Dropdown */}
                 <div className="absolute top-full right-0 mt-4 w-80 bg-white dark:bg-[#0A0A0F] rounded-[2rem] border border-gray-200 dark:border-white/10 shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all p-6 z-[100]">
                    <h4 className="text-xs font-black uppercase tracking-widest text-gray-900 dark:text-white mb-6 flex justify-between items-center">
                       Mission Updates
-                      <span className="text-[8px] bg-rose-500 text-white px-2 py-0.5 rounded-full">3 New</span>
+                      {notifications.length > 0 && (
+                        <span className="text-[8px] bg-rose-500 text-white px-2 py-0.5 rounded-full">{notifications.length} New</span>
+                      )}
                    </h4>
                    <div className="space-y-4">
-                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                         <div className="w-2 h-2 bg-rose-500 rounded-full mt-1.5 shrink-0" />
-                         <div>
-                            <p className="text-xs font-bold text-gray-900 dark:text-white">Safety Refresh Mandatory</p>
-                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Complete Q4 module by Oct 31.</p>
-                         </div>
-                      </div>
-                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                         <div className="w-2 h-2 bg-primary-gold rounded-full mt-1.5 shrink-0" />
-                         <div>
-                            <p className="text-xs font-bold text-gray-900 dark:text-white">Campaign Update: Juhu Beach</p>
-                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Mission starting in 4 hours.</p>
-                         </div>
-                      </div>
-                      <div className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
-                         <div className="w-2 h-2 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
-                         <div>
-                            <p className="text-xs font-bold text-gray-900 dark:text-white">Impact Points Earned</p>
-                            <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">Received 120 points for Coastal Mission.</p>
-                         </div>
-                      </div>
+                      {notifications.map((n, i) => (
+                        <div key={i} className="flex gap-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                           <div className={`w-2 h-2 ${n.color} rounded-full mt-1.5 shrink-0`} />
+                           <div>
+                              <p className="text-xs font-bold text-gray-900 dark:text-white">{n.title}</p>
+                              <p className="text-[10px] text-gray-500 dark:text-primary-offwhite/50">{n.desc}</p>
+                           </div>
+                        </div>
+                      ))}
+                      {notifications.length === 0 && (
+                        <p className="text-center py-6 text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">All clear for now</p>
+                      )}
                    </div>
-                   <button className="w-full py-3 mt-6 border-t border-gray-100 dark:border-white/5 text-[10px] font-black uppercase tracking-widest text-primary-gold hover:text-orange-500 transition-colors">
-                      Clear All Notifications
-                   </button>
+                   {notifications.length > 0 && (
+                     <button 
+                       onClick={() => setNotifications([])}
+                       className="w-full py-3 mt-6 border-t border-gray-100 dark:border-white/5 text-[10px] font-black uppercase tracking-widest text-primary-gold hover:text-orange-500 transition-colors"
+                     >
+                        Clear All Notifications
+                     </button>
+                   )}
                 </div>
              </div>
           </div>

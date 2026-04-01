@@ -81,16 +81,17 @@ const VolunteerModules = () => {
                            <button disabled className="px-6 py-2 bg-gray-200 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-xl opacity-50 flex items-center gap-2">
                               Locked
                            </button>
-                        ) : mod.status === 'Completed' ? (
-                           <button className="px-6 py-2 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/30 flex items-center gap-2">
-                              Review Content
-                           </button>
                         ) : (
                            <button 
                              onClick={() => setActiveModule(mod)}
-                             className="px-6 py-2 bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary-gold hover:text-gray-900 transition-all shadow-lg flex items-center gap-2 group"
+                             className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-lg flex items-center gap-2 group ${
+                               mod.status === 'Completed' 
+                               ? 'bg-emerald-500 text-white shadow-emerald-500/30' 
+                               : 'bg-gray-900 text-white dark:bg-white dark:text-[#0A0A0F] hover:bg-primary-gold hover:text-gray-900'
+                             }`}
                            >
-                              Continue Module <Play size={10} className="fill-current group-hover:scale-125 transition-transform" />
+                              {mod.status === 'Completed' ? 'Review Content' : 'Continue Module'}
+                              <Play size={10} className="fill-current group-hover:scale-125 transition-transform" />
                            </button>
                         )}
                      </div>
@@ -126,20 +127,55 @@ const VolunteerModules = () => {
 
       {/* Module Viewer Modal */}
       {activeModule && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-6 animate-in zoom-in duration-300">
-           <div className="w-full max-w-4xl aspect-video bg-gray-900 rounded-[3rem] overflow-hidden border border-white/10 relative shadow-2xl">
-              <div className="absolute top-6 right-6 z-30">
-                 <button onClick={() => setActiveModule(null)} className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-rose-500 transition-colors">✕</button>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 p-4 md:p-10 animate-in zoom-in duration-300">
+           <div className="w-full max-w-5xl bg-[#050508] rounded-[3rem] overflow-hidden border border-white/20 relative shadow-2xl flex flex-col md:flex-row h-[90vh] md:h-auto">
+              {/* Sidebar Info */}
+              <div className="w-full md:w-80 p-8 border-b md:border-b-0 md:border-r border-white/10 flex flex-col justify-between order-2 md:order-1 overflow-y-auto">
+                 <div>
+                    <div className="p-3 bg-primary-gold/10 rounded-xl w-fit mb-6">
+                       {activeModule.icon}
+                    </div>
+                    <h3 className="text-2xl font-heading font-black text-white uppercase mb-4 leading-tight">{activeModule.title}</h3>
+                    <p className="text-xs text-primary-offwhite/50 leading-relaxed font-body mb-8">{activeModule.desc}</p>
+                    
+                    <div className="space-y-4">
+                       <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex justify-between items-center">
+                          <span className="text-[10px] font-black uppercase text-gray-500">Reward</span>
+                          <span className="text-sm font-black text-primary-gold">{activeModule.points} Pts</span>
+                       </div>
+                       <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex justify-between items-center">
+                          <span className="text-[10px] font-black uppercase text-gray-400">Duration</span>
+                          <span className="text-xs font-bold text-white tracking-widest uppercase">{activeModule.duration}</span>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <button 
+                   onClick={() => setActiveModule(null)}
+                   className="w-full py-4 mt-8 bg-white/5 text-white font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-rose-500 transition-all border border-white/10"
+                 >
+                    Close Session
+                 </button>
               </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-20 text-center">
-                 <div className="p-6 bg-primary-gold/20 rounded-full mb-8 animate-pulse">
-                    <Play size={48} className="text-primary-gold fill-current" />
-                 </div>
-                 <h3 className="text-3xl font-heading font-black text-white uppercase mb-4 tracking-wider">{activeModule.title}</h3>
-                 <p className="text-primary-offwhite/50 mb-12 max-w-xl font-body">Now Streaming: Advanced safety protocols and coastal risk assessment. Keep focus to earn {activeModule.points} points.</p>
-                 <div className="w-full max-w-md h-1 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary-gold animate-[shimmer_10s_infinite_linear]" style={{ width: '45%' }} />
-                 </div>
+
+              {/* Video Player Area */}
+              <div className="flex-1 bg-black relative order-1 md:order-2 group min-h-[300px]">
+                 <iframe 
+                   className="w-full h-full absolute inset-0"
+                   src={`https://www.youtube.com/embed/S2H_A9E198A?autoplay=1&modestbranding=1&rel=0`}
+                   title="NGO Training Video"
+                   frameBorder="0"
+                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                   allowFullScreen
+                 ></iframe>
+                 
+                 {/* Close Overlay */}
+                 <button 
+                   onClick={() => setActiveModule(null)} 
+                   className="absolute top-6 right-6 z-30 p-4 bg-black/50 backdrop-blur-md rounded-full text-white hover:bg-rose-500 transition-colors opacity-0 group-hover:opacity-100"
+                 >
+                    ✕
+                 </button>
               </div>
            </div>
         </div>
