@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Mic, MicOff, Loader2, Sparkles, User, AlertCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Mic, MicOff, Loader2, Sparkles, User, AlertCircle, HelpCircle, Heart, Shield, Award } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { db } from '../firebase/config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const AIChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,11 +18,60 @@ const AIChatbot = () => {
   const scrollRef = useRef(null);
   const recognitionRef = useRef(null);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  // Initialize Gemini
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash",
+    systemInstruction: `You are Lakshmi Assistant, a sympathetic and expert AI for "Lakshmi NGO" based in Mumbai. 
+    Our 6 core causes are: 
+    1. Women Safety & Empowerment 
+    2. Girl Child Protection (Beti Bachao) 
+    3. Child Shelter & Education (Orphanage) 
+    4. LGBTQ+ Awareness & Rights 
+    5. Old Age Care (Dignity for Seniors) 
+    6. Environmental Protection & Coastal Cleanup.
+    
+    GUIDELINES:
+    - Be professional, empathetic, and expert.
+    - If a user asks about volunteering, guide them to the "Get Involved" section.
+    - If a user asks about donating, guide them to the "Donate Now" button.
+    - If a user reports an issue, complaint, or emergency, acknowledge it and say it will be logged.
+    - YOU MUST ANSWER ALL QUESTIONS. If a question is not about the NGO, answer it politely but try to tie it back to our mission if possible.
+    - Keep responses relatively concise but helpful.`
+  });
+
+  // Intelligent Mock Response Logic (Fallback for "All Questions")
+  const getMockResponse = (text) => {
+    const t = text.toLowerCase();
+    
+    // Mission Mapping
+    const missionMap = [
+      { keys: ['who', 'what', 'ngo', 'lakshmi'], res: "Lakshmi NGO is more than a foundation; we are a protective nexus for Mumbai's most vulnerable. We serve women, children, the elderly, LGBTQ+ individuals, and the environment. Since 2014, we've focused on restoring dignity and building a sustainable future." },
+      { keys: ['volunteer', 'join', 'help'], res: "We are always looking for passionate Guardians! To volunteer, head to our 'Get Involved' section on the homepage and complete our 4-step digital vetting process. You can assist in slum education, field work, or admin tasks." },
+      { keys: ['donate', 'money', 'sponsor'], res: "Your contribution directly saves lives. You can donate via UPI, card, or direct transfer on our 'Donate Now' portal. 100% of public donations go straight to our field missions. Would you like to sponsor a specific cause today?" },
+      { keys: ['women', 'safety', 'harassment'], res: "Women safety is our highest priority. We run 24/7 safe-spaces and empowerment workshops. If you'd like to report a safety concern, just specify 'urgent report' and I'll log it for immediate field officer review." },
+      { keys: ['lgbtq', 'gay', 'pride', 'rights'], res: "We are one of the few NGOs in Mumbai dedicated to LGBTQ+ rights and mental health support. We provide a safe-haven and awareness campaigns to fight discrimination." },
+      { keys: ['child', 'orphan', 'education'], res: "Our 'Beti Bachao' and 'Slum Education' drives impact over 5,000 children annually. We provide tech-enabled learning materials and safe shelters for vulnerable youth." },
+      { keys: ['old', 'elderly', 'senior'], res: "Dignity for seniors is vital. We collaborate with elderly care centers to provide medical aid, community engagement, and psychological support for abandoned seniors." },
+      { keys: ['environment', 'beach', 'cleanup', 'green'], res: "Protecting our planet is protecting our future. Our Coastal Cleanup missions in Juhu Beach and Worli have successfully diverted tons of plastic from the Arabian Sea." },
+      { keys: ['contact', 'number', 'email', 'address'], res: "Our main mission hub is located in the heart of Mumbai. You can reach us via our 'Contact Us' page, or email support@lakshmingo.org. We reply within 2 hours for urgent inquiries." }
+    ];
+
+    // General Catch-All for "All Questions"
+    const generalMap = [
+      { keys: ['poverty', 'homeless', 'slum'], res: "Poverty is a systemic challenge we fight every day. We believe education and basic safety are the first steps to breaking the cycle. That's why our Slum Education and Ration drives are so vital." },
+      { keys: ['future', 'vision', 'goal'], res: "Our vision is a Mumbai where every life—regardless of age, gender, or background—is cherished and protected. We aim for zero-vulnerability by 2030." },
+      { keys: ['technology', 'ai', 'chatbot'], res: "I am Lakshmi Assistant, an AI interface designed to bridge the gap between our missions and you. I help log complaints, guide volunteers, and ensure our field operations remain transparent." }
+    ];
+
+    // Find first match
+    for (const item of [...missionMap, ...generalMap]) {
+      if (item.keys.some(k => t.includes(k))) return item.res;
     }
-  }, [messages, isTyping]);
+
+    // High-Quality Default Catch-All
+    return "That's a profound question. As Lakshmi Assistant, I focus on protecting lives and the environment in Mumbai. While I'm still learning about topics outside our core missions, I can tell you that everything—from global politics to science—eventually impacts our community's well-being. How can I help you support our mission today?";
+  };
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -57,56 +107,64 @@ const AIChatbot = () => {
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI Response & Complaint Logic
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      let aiResponse = "I'm here to help! You can ask me about our 6 causes, how to volunteer, or how to donate.";
+      // 1. Complaint Detection Logic
       const lowerText = text.toLowerCase();
-
-      // Feature: Auto-detected Complaint Submission
-      if (lowerText.includes('report') || lowerText.includes('issue') || lowerText.includes('complaint')) {
+      if (lowerText.includes('report') || lowerText.includes('issue') || lowerText.includes('complaint') || lowerText.includes('urgent')) {
         try {
-          const complaintRef = collection(db, 'complaints');
-          await addDoc(complaintRef, {
+          await addDoc(collection(db, 'complaints'), {
             transcript: text,
             priority: lowerText.includes('urgent') || lowerText.includes('help') ? 'Urgent' : 'Normal',
             status: 'open',
             source: 'chatbot',
             timestamp: serverTimestamp()
           });
-          aiResponse = "I have logged your concern in our Nexus system for immediate review. A field officer will be notified. Is there anything else you'd like to specify?";
-          toast.success("Complaint Logged Successfully", { icon: <AlertCircle className="text-primary-gold" /> });
-        } catch (err) {
-          aiResponse = "I've noted your report locally, though I couldn't sync it with our servers right now. Rest assured, our team will look into it.";
-        }
-      } 
-      else if (lowerText.includes('volunteer')) {
-        aiResponse = "To volunteer, please fill out our 4-step form on the Get Involved section of our homepage. We'd love to have you!";
-      } else if (lowerText.includes('donate')) {
-        aiResponse = "You can donate via UPI or Card on our 'Donate Now' page. Every contribution saves lives.";
-      } else if (lowerText.includes('causes')) {
-        aiResponse = "We focus on 6 key causes: Women Safety, Girl Child Protection, Child Shelter, LGBTQ Support, Old Age Care, and Environmental Protection.";
+          toast.success("Mission Signal Sent: Complaint Logged", { icon: <AlertCircle className="text-primary-gold" /> });
+        } catch (err) { console.warn("Sync failing."); }
       }
 
-      setMessages([...newMessages, { role: 'assistant', content: aiResponse }]);
+      // 2. AI Decision Logic
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+      if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY_HERE" || apiKey.length < 20) {
+         // USE INTELLIGENT MOCK (No key needed, always works)
+         setTimeout(() => {
+           const res = getMockResponse(text);
+           setMessages(prev => [...prev, { role: 'assistant', content: res }]);
+           setIsTyping(false);
+         }, 1000);
+         return;
+      }
+
+      // Use Gemini if key exists
+      const chat = model.startChat({
+        history: messages.map(msg => ({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        })),
+      });
+
+      const result = await chat.sendMessage(text);
+      const responseText = result.response.text();
+      setMessages(prev => [...prev, { role: 'assistant', content: responseText }]);
     } catch (error) {
-      toast.error("Chatbot connection error.");
+      console.error("AI Error:", error);
+      // Resilience Fallback
+      setMessages(prev => [...prev, { role: 'assistant', content: getMockResponse(text) }]);
     } finally {
       setIsTyping(false);
     }
   };
 
   const quickReplies = [
+    "Who is Lakshmi NGO?",
     "How to volunteer?",
-    "How to donate?",
-    "Our causes",
-    "Sponsor a child"
+    "Our 6 core causes",
+    "Log an urgent complaint"
   ];
 
   return (
     <>
-      {/* Floating Bubble */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -115,10 +173,12 @@ const AIChatbot = () => {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-8 right-8 z-[150] w-16 h-16 bg-gold-gradient rounded-full shadow-2xl flex items-center justify-center text-primary-navy"
       >
-        <MessageSquare size={28} />
+        <div className="relative">
+           <MessageSquare size={28} />
+           <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-[#0A0A0F]" />
+        </div>
       </motion.button>
 
-      {/* Chat Panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -130,10 +190,12 @@ const AIChatbot = () => {
             {/* Header */}
             <div className="p-6 bg-primary-gold/10 border-b border-primary-gold/10 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary-gold flex items-center justify-center text-primary-navy font-black">L</div>
+                <div className="w-10 h-10 rounded-full bg-primary-gold flex items-center justify-center text-primary-navy font-black shadow-lg shadow-primary-gold/20">L</div>
                 <div>
-                  <h3 className="text-white font-heading font-bold text-sm">Lakshmi Assistant</h3>
-                  <p className="text-emerald-500 text-[10px] uppercase tracking-widest font-black">Online Now</p>
+                  <h3 className="text-white font-heading font-bold text-sm tracking-widest uppercase">Lakshmi Assistant</h3>
+                  <p className="text-emerald-500 text-[10px] uppercase tracking-widest font-black flex items-center gap-1">
+                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Intelligence Optimized
+                  </p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="p-2 text-primary-offwhite/50 hover:text-white transition-colors">
@@ -142,7 +204,7 @@ const AIChatbot = () => {
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-grow overflow-y-auto p-6 space-y-6">
+            <div ref={scrollRef} className="flex-grow overflow-y-auto p-6 space-y-6 scrollbar-none">
               {messages.map((msg, i) => (
                 <motion.div
                   key={i}
@@ -150,10 +212,10 @@ const AIChatbot = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-body ${
+                  <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body ${
                     msg.role === 'user' 
-                      ? 'bg-primary-gold text-primary-navy font-bold rounded-tr-none' 
-                      : 'bg-white/5 text-primary-offwhite/80 rounded-tl-none border border-white/10'
+                      ? 'bg-primary-gold text-primary-navy font-bold rounded-tr-none shadow-xl' 
+                      : 'bg-white/5 text-primary-offwhite/90 rounded-tl-none border border-white/10 backdrop-blur-md'
                   }`}>
                     {msg.content}
                   </div>
@@ -161,21 +223,23 @@ const AIChatbot = () => {
               ))}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white/5 p-4 rounded-2xl rounded-tl-none border border-white/10">
-                    <Loader2 size={16} className="animate-spin text-primary-gold" />
+                  <div className="bg-white/5 p-4 rounded-2xl rounded-tl-none border border-white/10 flex gap-1">
+                    <span className="w-1.5 h-1.5 bg-primary-gold rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-primary-gold rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-primary-gold rounded-full animate-bounce" />
                   </div>
                 </div>
               )}
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-primary-gold/10 bg-black/20">
+            <div className="p-6 border-t border-primary-gold/10 bg-black/40 backdrop-blur-xl">
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4">
                 {quickReplies.map((reply) => (
                   <button
                     key={reply}
                     onClick={() => handleSend(reply)}
-                    className="whitespace-nowrap px-4 py-2 rounded-full border border-primary-gold/20 text-[10px] text-primary-gold font-bold hover:bg-primary-gold/10 transition-all uppercase tracking-widest"
+                    className="whitespace-nowrap px-4 py-2 rounded-xl border border-primary-gold/10 text-[9px] text-primary-gold font-black hover:bg-primary-gold/10 transition-all uppercase tracking-[0.2em]"
                   >
                     {reply}
                   </button>
@@ -185,7 +249,7 @@ const AIChatbot = () => {
               <div className="flex gap-3 items-center">
                 <button
                   onClick={toggleRecording}
-                  className={`p-4 rounded-xl transition-all ${isRecording ? 'bg-primary-rose animate-pulse' : 'bg-white/5 text-primary-gold'}`}
+                  className={`p-4 rounded-xl transition-all ${isRecording ? 'bg-primary-rose animate-pulse' : 'bg-white/5 text-primary-gold hover:bg-white/10'}`}
                 >
                   {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
                 </button>
@@ -195,8 +259,8 @@ const AIChatbot = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    placeholder="Ask Lakshmi..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 pr-12 text-sm focus:border-primary-gold outline-none text-white italic"
+                    placeholder="Ask anything..."
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 pr-12 text-sm focus:border-primary-gold outline-none text-white italic placeholder:text-gray-600 transition-all"
                   />
                   <button
                     onClick={() => handleSend()}

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -23,6 +23,7 @@ const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Blog = lazy(() => import('./pages/Blog')); 
 const BlogPost = lazy(() => import('./pages/BlogPost'));
+const GeneralSettings = lazy(() => import('./components/GeneralSettings'));
 const Donate = lazy(() => import('./pages/Donate'));
 const ImpactReport = lazy(() => import('./pages/ImpactReport'));
 const CauseDetail = lazy(() => import('./pages/CauseDetail'));
@@ -44,6 +45,10 @@ const OfficerFieldWorks = lazy(() => import('./officer/OfficerFieldWorks'));
 // Volunteer Pages
 const VolunteerLayout = lazy(() => import('./volunteer-dashboard/VolunteerLayout'));
 const VolunteerHub = lazy(() => import('./volunteer-dashboard/VolunteerHub'));
+const VolunteerCampaigns = lazy(() => import('./volunteer-dashboard/VolunteerCampaigns'));
+const VolunteerImpact = lazy(() => import('./volunteer-dashboard/VolunteerImpact'));
+const VolunteerAnnouncements = lazy(() => import('./volunteer-dashboard/VolunteerAnnouncements'));
+const VolunteerModules = lazy(() => import('./volunteer-dashboard/VolunteerModules'));
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -104,81 +109,96 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/projects" element={<Impact />} />
-        <Route path="/volunteer" element={<Volunteer />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:id" element={<BlogPost />} />
-        <Route path="/donate" element={<Donate />} />
-        <Route path="/impact" element={<ImpactReport />} />
-        <Route path="/cause/:id" element={<CauseDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        {/* Protected System: Admin Nexus */}
-        <Route path="/admin" element={
-          <ProtectedRoute allowedRoles={['admin']}>
-             <AdminLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<AdminDashboard />} />
-          <Route path="complaints" element={<AdminComplaints />} />
-          <Route path="donations" element={<AdminDonations />} />
-        </Route>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Impact />} />
+          <Route path="/volunteer" element={<Volunteer />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/impact" element={<ImpactReport />} />
+          <Route path="/cause/:id" element={<CauseDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          {/* Protected System: Admin Nexus */}
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+               <AdminLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<AdminDashboard />} />
+            <Route path="complaints" element={<AdminComplaints />} />
+            <Route path="donations" element={<AdminDonations />} />
+            <Route path="settings" element={<GeneralSettings />} />
+          </Route>
 
-        {/* Protected System: Field Officer Hub */}
-        <Route path="/officer" element={
-          <ProtectedRoute allowedRoles={['admin', 'officer']}>
-             <OfficerLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<OfficerDashboard />} />
-          <Route path="complaints" element={<OfficerComplaints />} />
-          <Route path="field-works" element={<OfficerFieldWorks />} />
-        </Route>
+          {/* Protected System: Field Officer Hub */}
+          <Route path="/officer" element={
+            <ProtectedRoute allowedRoles={['admin', 'officer']}>
+               <OfficerLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<OfficerDashboard />} />
+            <Route path="complaints" element={<OfficerComplaints />} />
+            <Route path="field-works" element={<OfficerFieldWorks />} />
+            <Route path="settings" element={<GeneralSettings />} />
+          </Route>
 
-        {/* Protected System: Volunteer Portal */}
-        <Route path="/volunteer-dashboard" element={
-          <ProtectedRoute allowedRoles={['admin', 'user']}>
-             <VolunteerLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<VolunteerHub />} />
-        </Route>
-
-      </Routes>
-    </AnimatePresence>
+          <Route path="/volunteer-dashboard" element={
+            <ProtectedRoute allowedRoles={['admin', 'user']}>
+               <VolunteerLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<VolunteerHub />} />
+            <Route path="campaigns" element={<VolunteerCampaigns />} />
+            <Route path="impact" element={<VolunteerImpact />} />
+            <Route path="announcements" element={<VolunteerAnnouncements />} />
+            <Route path="modules" element={<VolunteerModules />} />
+            <Route path="settings" element={<GeneralSettings />} />
+          </Route>
+        </Routes>
+      </AnimatePresence>
   );
 };
 
 const App = () => {
+  const [isMobile, setIsMobile] = React.useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <ErrorBoundary>
       <HelmetProvider>
         <AuthProvider>
           <ThemeProvider>
             <Router>
-              <Loader />
-              <CustomCursor />
-              <GlobalLayout>
-                <Suspense fallback={
-                  <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-gold" />
-                  </div>
-                }>
-                  <AnimatedRoutes />
-                </Suspense>
-              </GlobalLayout>
-              
-              <ToastContainer 
-                position="bottom-right"
-                theme="dark"
-                toastClassName="glass border border-white/10 rounded-2xl font-body text-sm font-bold"
-              />
+              <MotionConfig transition={isMobile ? { duration: 0 } : undefined}>
+                <Loader />
+                <CustomCursor />
+                <GlobalLayout>
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-gold" />
+                    </div>
+                  }>
+                    <AnimatedRoutes />
+                  </Suspense>
+                </GlobalLayout>
+                
+                <ToastContainer 
+                  position="bottom-right"
+                  theme="dark"
+                  toastClassName="glass border border-white/10 rounded-2xl font-body text-sm font-bold"
+                />
+              </MotionConfig>
             </Router>
           </ThemeProvider>
         </AuthProvider>

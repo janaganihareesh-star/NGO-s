@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MessageSquareWarning, DollarSign, LogOut, ArrowLeft, X } from 'lucide-react';
+import { LayoutDashboard, MessageSquareWarning, DollarSign, LogOut, ArrowLeft, X, Settings } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
@@ -34,7 +34,8 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
   const links = [
     { to: "/admin", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
     { to: "/admin/donations", icon: <DollarSign size={20} />, label: "Donations" },
-    { to: "/admin/complaints", icon: <MessageSquareWarning size={20} />, label: "Complaints", alert: hasCriticalComplaint }
+    { to: "/admin/complaints", icon: <MessageSquareWarning size={20} />, label: "Complaints", alert: hasCriticalComplaint },
+    { to: "/admin/settings", icon: <Settings size={20} />, label: "Settings" }
   ];
 
   const sidebarContent = (

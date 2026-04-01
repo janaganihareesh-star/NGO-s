@@ -66,27 +66,32 @@ const AdminDonations = () => {
       toast.info('No data to export.'); return;
     }
     
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Donor Name,Email,Amount,Method,Campaign,Date\n";
+    const headers = ["Donor Name", "Email", "Amount", "Method", "Campaign", "Date"];
+    const rows = donations.map(d => [
+      (d.donorName || "Anonymous").replace(/,/g, ''),
+      (d.email || "N/A").replace(/,/g, ''),
+      d.amount || 0,
+      (d.method || "N/A").toUpperCase(),
+      d.campaignId || "general",
+      d.timestamp ? d.timestamp.toDate().toLocaleString().replace(/,/g, '') : "N/A"
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     
-    donations.forEach(d => {
-      const date = d.timestamp ? d.timestamp.toDate().toLocaleString().replace(/,/g, '') : "N/A";
-      const name = d.donorName ? d.donorName.replace(/,/g, '') : "Anonymous";
-      const email = d.email ? d.email.replace(/,/g, '') : "N/A";
-      const amount = d.amount || 0;
-      const method = (d.method || "N/A").toUpperCase();
-      const campaignId = d.campaignId || "general";
-      
-      csvContent += `${name},${email},${amount},${method},${campaignId},${date}\n`;
-    });
-    
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Donations_Export_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Lakshmi_Donations_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
-    link.remove();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("CSV Export Successful");
+  };
+
+  const handlePrintLedger = () => {
+    window.print();
   };
 
   const handleManualAdd = async (e) => {
@@ -142,10 +147,13 @@ const AdminDonations = () => {
         </div>
         
         <div className="flex flex-wrap gap-4 w-full xl:w-auto">
-           <button onClick={() => setShowModal(true)} className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white/5 border border-white/10 hover:border-white/30 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition-all">
+           <button onClick={handlePrintLedger} className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white/5 border border-white/10 hover:border-white/30 text-white font-bold rounded-xl text-[10px] uppercase tracking-widest transition-all">
+              Print Ledger
+           </button>
+           <button onClick={() => setShowModal(true)} className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white/5 border border-white/10 hover:border-white/30 text-white font-bold rounded-xl text-[10px] uppercase tracking-widest transition-all">
              <Plus size={16} /> Manual Entry
            </button>
-           <button onClick={handleExportCSV} className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary-gold text-primary-navy font-bold rounded-xl hover:bg-white transition-all text-xs uppercase tracking-widest">
+           <button onClick={handleExportCSV} className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary-gold text-primary-navy font-bold rounded-xl hover:bg-white transition-all text-[10px] uppercase tracking-widest shadow-lg shadow-primary-gold/20">
              <Download size={16} /> Export CSV
            </button>
         </div>
@@ -153,15 +161,15 @@ const AdminDonations = () => {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass p-6 rounded-3xl border border-white/5 border-l-4 border-l-green-500">
+        <div className="glass p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-green-500/10 to-transparent border-l-4 border-l-green-500 shadow-xl shadow-green-500/5">
            <p className="text-gray-400 uppercase tracking-widest text-[10px] font-black mb-1">Today's Total</p>
            <p className="text-3xl font-heading font-black text-white bg-clip-text">₹{stats.today.toLocaleString('en-IN')}</p>
         </div>
-        <div className="glass p-6 rounded-3xl border border-white/5 border-l-4 border-l-primary-gold">
+        <div className="glass p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-primary-gold/10 to-transparent border-l-4 border-l-primary-gold shadow-xl shadow-primary-gold/5">
            <p className="text-gray-400 uppercase tracking-widest text-[10px] font-black mb-1">This Month</p>
            <p className="text-3xl font-heading font-black text-white">₹{stats.month.toLocaleString('en-IN')}</p>
         </div>
-        <div className="glass p-6 rounded-3xl border border-white/5 border-l-4 border-l-blue-500">
+        <div className="glass p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-blue-500/10 to-transparent border-l-4 border-l-blue-500 shadow-xl shadow-blue-500/5">
            <p className="text-gray-400 uppercase tracking-widest text-[10px] font-black mb-1">Global All Time</p>
            <p className="text-3xl font-heading font-black text-white">₹{stats.total.toLocaleString('en-IN')}</p>
         </div>
@@ -199,7 +207,7 @@ const AdminDonations = () => {
 
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead className="bg-[#0A0F1E]">
+            <thead className="bg-[#0A0F1E] sticky top-0 z-20">
               <tr>
                 <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Donor</th>
                 <th className="px-8 py-5 text-[10px] uppercase tracking-widest text-gray-400 font-bold border-b border-white/5">Amount</th>

@@ -69,7 +69,15 @@ html:not(.dark) .bg-primary-navy {
 }
 
 html:not(.dark) .text-primary-navy {
-  color: #F5F0E8 !important;
+  color: #0A0A0F !important;
+}
+
+html:not(.dark) .text-primary-offwhite {
+  color: #374151 !important;
+}
+
+html:not(.dark) .text-primary-gold\/80 {
+  color: #C9933A !important;
 }
 
 html:not(.dark) h1, 
@@ -101,6 +109,11 @@ html:not(.dark) .glass {
   --glass-bg: rgba(255, 255, 255, 0.70);
   --glass-border: rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  color: #111827 !important;
+}
+
+html:not(.dark) .chart-label {
+  color: #374151 !important;
 }
 
 html:not(.dark) [class*="bg-[#0A0F1E]"] {
@@ -150,4 +163,22 @@ html:not(.dark) [class*="bg-[#0A0F1E]"] {
 
 .bg-gold-gradient {
   background: var(--gold-gradient);
+}
+
+/* Disable Animations on Mobile */
+@media (max-width: 768px) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .shimmer::after {
+    display: none !important;
+  }
+  
+  .pulse-glow {
+    animation: none !important;
+    box-shadow: none !important;
+  }
 }

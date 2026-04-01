@@ -12,6 +12,7 @@ import {
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 ChartJS.register(
   CategoryScale,
@@ -24,6 +25,8 @@ ChartJS.register(
 );
 
 const ImpactCharts = () => {
+  const { isDarkMode } = useTheme();
+
   const barData = {
     labels: ['Women', 'Girls', 'Children', 'LGBTQ+', 'Elders', 'Environment'],
     datasets: [
@@ -42,7 +45,7 @@ const ImpactCharts = () => {
     datasets: [
       {
         data: [60, 20, 12, 8],
-        backgroundColor: ['#C9933A', '#8B2252', '#0F7A6E', '#1A1A24'],
+        backgroundColor: ['#C9933A', '#8B2252', '#0F7A6E', isDarkMode ? '#1A1A24' : '#E5E7EB'],
         borderWidth: 0,
         hoverOffset: 15,
       },
@@ -57,22 +60,32 @@ const ImpactCharts = () => {
         display: false,
       },
       tooltip: {
-        backgroundColor: '#1A1A24',
+        backgroundColor: isDarkMode ? '#1A1A24' : '#F9FAFB',
+        titleColor: isDarkMode ? '#C9933A' : '#0A0A0F',
+        bodyColor: isDarkMode ? '#F5F0E8' : '#111827',
         titleFont: { family: 'Playfair Display', size: 14 },
         bodyFont: { family: 'DM Sans', size: 12 },
         padding: 12,
         cornerRadius: 10,
         displayColors: false,
+        borderWidth: 1,
+        borderColor: isDarkMode ? 'transparent' : '#E5E7EB',
       },
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: 'rgba(245, 240, 232, 0.5)', font: { size: 10 } },
+        ticks: { 
+          color: isDarkMode ? 'rgba(245, 240, 232, 0.5)' : '#4B5563', 
+          font: { size: 10, weight: 'bold' } 
+        },
       },
       y: {
-        grid: { color: 'rgba(245, 240, 232, 0.05)' },
-        ticks: { color: 'rgba(245, 240, 232, 0.5)', font: { size: 10 } },
+        grid: { color: isDarkMode ? 'rgba(245, 240, 232, 0.05)' : 'rgba(0, 0, 0, 0.05)' },
+        ticks: { 
+          color: isDarkMode ? 'rgba(245, 240, 232, 0.5)' : '#4B5563', 
+          font: { size: 10, weight: 'bold' } 
+        },
       },
     },
   };
@@ -85,8 +98,8 @@ const ImpactCharts = () => {
       legend: {
         position: 'bottom',
         labels: {
-          color: '#F5F0E8',
-          font: { family: 'DM Sans', size: 11 },
+          color: isDarkMode ? '#F5F0E8' : '#111827',
+          font: { family: 'DM Sans', size: 11, weight: 'bold' },
           padding: 20,
           usePointStyle: true,
         },
@@ -95,10 +108,10 @@ const ImpactCharts = () => {
   };
 
   return (
-    <section className="py-24 bg-secondary/30">
+    <section className={`py-24 transition-colors duration-500 ${isDarkMode ? 'bg-secondary/30' : 'bg-gray-50'}`}>
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-heading font-black mb-4">DETAILED IMPACT ANALYSIS</h2>
+          <h2 className={`text-4xl md:text-5xl font-heading font-black mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>DETAILED IMPACT ANALYSIS</h2>
           <div className="h-1 w-24 bg-primary-gold mx-auto" />
         </div>
 
@@ -134,9 +147,9 @@ const ImpactCharts = () => {
             </h3>
             <div className="h-[300px] relative">
               <Doughnut data={donutData} options={donutOptions} />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none pb-12">
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <div className="text-3xl font-heading font-black text-primary-gold">FY25</div>
-                <div className="text-[10px] uppercase tracking-widest text-primary-offwhite/40 font-bold">Financial Year</div>
+                <div className={`text-[10px] uppercase tracking-widest ${isDarkMode ? 'text-primary-offwhite/40' : 'text-gray-500'} font-bold`}>Financial Year</div>
               </div>
             </div>
           </motion.div>
@@ -148,7 +161,7 @@ const ImpactCharts = () => {
             { label: 'Yearly Growth', val: 88, color: '#C9933A' },
             { label: 'Resource Efficiency', val: 94, color: '#8B2252' },
             { label: 'Community Trust', val: 98, color: '#0F7A6E' },
-            { label: 'Social Return', val: 82, color: '#F5F0E8' },
+            { label: 'Social Return', val: 82, color: '#C9933A' },
           ].map((ring, i) => (
             <motion.div
               key={i}
@@ -156,40 +169,42 @@ const ImpactCharts = () => {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="flex flex-col items-center glass p-6 rounded-3xl"
+              className={`relative group p-8 rounded-3xl border ${isDarkMode ? 'border-primary-gold/10' : 'border-gray-200'} hover:border-primary-gold/30 transition-all duration-500 ${isDarkMode ? 'bg-white/5' : 'bg-gray-50'} overflow-hidden shadow-sm hover:shadow-md`}
             >
-              <div className="relative w-24 h-24 mb-4">
-                <svg className="w-full h-full transform -rotate-90">
-                  <circle
-                    cx="48"
-                    cy="48"
-                    r="40"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="transparent"
-                    className="text-white/5"
-                  />
-                  <motion.circle
-                    cx="48"
-                    cy="48"
-                    r="40"
-                    stroke={ring.color}
-                    strokeWidth="4"
-                    fill="transparent"
-                    strokeDasharray={251.2}
-                    initial={{ strokeDashoffset: 251.2 }}
-                    whileInView={{ strokeDashoffset: 251.2 - (251.2 * ring.val) / 100 }}
-                    transition={{ duration: 1.5, delay: 0.5 }}
-                    viewport={{ once: true }}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center font-heading font-bold text-lg">
-                  {ring.val}%
+              <div className="flex flex-col items-center">
+                <div className="relative w-24 h-24 mb-4">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="transparent"
+                      className={isDarkMode ? "text-white/5" : "text-gray-200"}
+                    />
+                    <motion.circle
+                      cx="48"
+                      cy="48"
+                      r="40"
+                      stroke={ring.color}
+                      strokeWidth="4"
+                      fill="transparent"
+                      strokeDasharray={251.2}
+                      initial={{ strokeDashoffset: 251.2 }}
+                      whileInView={{ strokeDashoffset: 251.2 - (251.2 * ring.val) / 100 }}
+                      transition={{ duration: 1.5, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    />
+                  </svg>
+                  <div className={`absolute inset-0 flex items-center justify-center font-heading font-bold text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+                    {ring.val}%
+                  </div>
                 </div>
+                <span className={`text-[10px] uppercase tracking-widest ${isDarkMode ? 'text-primary-offwhite/50' : 'text-gray-500'} text-center font-bold`}>
+                  {ring.label}
+                </span>
               </div>
-              <span className="text-[10px] uppercase tracking-widest text-primary-offwhite/50 text-center font-bold">
-                {ring.label}
-              </span>
             </motion.div>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, Sparkles, MapPin, Calendar, Clock, Star, ArrowRight, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
@@ -8,6 +9,7 @@ import { toast } from 'react-toastify';
 
 const VolunteerHub = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [joinedCampaigns, setJoinedCampaigns] = useState(new Set());
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -61,6 +63,14 @@ const VolunteerHub = () => {
     } finally {
       setIsSyncing(false);
     }
+  };
+
+  const handleLocationClick = (loc) => {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc + ", Mumbai")}`, '_blank');
+  };
+
+  const handleViewMap = () => {
+    window.open(`https://www.google.com/maps/search/?api=1&query=NGO+vulnerable+areas+Mumbai`, '_blank');
   };
 
   const activeCampaigns = [
@@ -121,7 +131,10 @@ const VolunteerHub = () => {
                        <p className="text-xs font-bold text-gray-500 dark:text-primary-offwhite/50 tracking-widest uppercase mb-4 flex items-center gap-1">
                           <Clock size={12}/> SAT 10:00 AM
                        </p>
-                       <button className="w-full py-2 bg-orange-500/10 text-orange-600 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-orange-500 hover:text-white transition-colors">
+                       <button 
+                         onClick={() => navigate('/volunteer-dashboard/campaigns')}
+                         className="w-full py-2 bg-orange-500/10 text-orange-600 font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-orange-500 hover:text-white transition-colors"
+                       >
                           View Details
                        </button>
                     </div>
@@ -131,9 +144,12 @@ const VolunteerHub = () => {
               <div className="p-8 rounded-3xl bg-gray-100 dark:bg-white/5 border border-transparent shadow-inner text-center flex flex-col justify-center">
                  <Shield size={32} className="mx-auto text-gray-400 mb-4" />
                  <p className="text-sm font-bold text-gray-500 dark:text-primary-offwhite/50 mb-4 leading-relaxed">Complete your safety certification to unlock critical response missions.</p>
-                 <button className="px-5 py-3 glass border border-gray-300 dark:border-white/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-gray-900 dark:text-white hover:bg-white transition-all">
-                    Begin Module
-                 </button>
+                  <button 
+                    onClick={() => navigate('/volunteer-dashboard/modules')}
+                    className="px-5 py-3 glass border border-gray-300 dark:border-white/20 rounded-xl font-black text-[10px] uppercase tracking-widest text-gray-900 dark:text-white hover:bg-white transition-all"
+                  >
+                     Begin Module
+                  </button>
               </div>
             </div>
          </div>
@@ -141,12 +157,15 @@ const VolunteerHub = () => {
          {/* Local Campaigns Feed */}
          <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-white/10">
-               <h3 className="text-xl font-heading font-black text-gray-900 dark:text-white uppercase tracking-widest">
-                  Local Initiatives Open
-               </h3>
-               <button className="text-[10px] uppercase font-black tracking-widest text-primary-gold hover:text-orange-500 transition-colors flex items-center gap-1">
-                  View Map <ArrowRight size={12} />
-               </button>
+                <h3 className="text-xl font-heading font-black text-gray-900 dark:text-white uppercase tracking-widest">
+                   Local Initiatives Open
+                </h3>
+                <button 
+                  onClick={handleViewMap}
+                  className="text-[10px] uppercase font-black tracking-widest text-primary-gold hover:text-orange-500 transition-colors flex items-center gap-1"
+                >
+                   View Map <ArrowRight size={12} />
+                </button>
             </div>
 
             <div className="space-y-4">
@@ -164,7 +183,12 @@ const VolunteerHub = () => {
                               </span>
                            </div>
                            <div className="flex items-center gap-4 text-[10px] uppercase font-bold text-gray-500 dark:text-primary-offwhite/50 tracking-widest">
-                              <span>{camp.loc}</span>
+                              <button 
+                                onClick={() => handleLocationClick(camp.loc)}
+                                className="hover:text-primary-gold transition-colors underline decoration-dotted underline-offset-4"
+                              >
+                                {camp.loc}
+                              </button>
                               <span>•</span>
                               <span className="flex items-center gap-1"><Calendar size={12}/> {camp.date}</span>
                            </div>

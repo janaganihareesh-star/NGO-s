@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Award, Bell, LogOut, Menu, HeartHandshake } from 'lucide-react';
+import { LayoutDashboard, Users, Award, Bell, LogOut, Menu, HeartHandshake, Settings, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VolunteerSidebar = ({ isOpen, setIsOpen }) => {
@@ -17,7 +17,9 @@ const VolunteerSidebar = ({ isOpen, setIsOpen }) => {
     { icon: <LayoutDashboard size={20} />, label: "My Hub", path: "/volunteer-dashboard", end: true },
     { icon: <Users size={20} />, label: "Local Campaigns", path: "/volunteer-dashboard/campaigns" },
     { icon: <Award size={20} />, label: "Impact Tiers", path: "/volunteer-dashboard/impact" },
-    { icon: <Bell size={20} />, label: "Announcements", path: "/volunteer-dashboard/announcements" }
+    { icon: <Bell size={20} />, label: "Announcements", path: "/volunteer-dashboard/announcements" },
+    { icon: <BookOpen size={20} />, label: "Training Modules", path: "/volunteer-dashboard/modules" },
+    { icon: <Settings size={20} />, label: "Settings", path: "/volunteer-dashboard/settings" }
   ];
 
   const getNavClass = (isActive) => {
