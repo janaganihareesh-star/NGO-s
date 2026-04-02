@@ -119,7 +119,7 @@ const Hero3D = () => {
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center pointer-events-auto">
             <button 
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/volunteer')}
               className="group relative px-12 py-5 bg-primary-gold text-primary-navy font-black rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary-gold/40"
             >
               <span className="relative z-10">JOIN US TODAY</span>

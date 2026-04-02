@@ -59,6 +59,10 @@ const AIChatbot = () => {
 
     // General Catch-All for "All Questions"
     const generalMap = [
+      { keys: ['hii', 'hi', 'hello', 'hey', 'greetings', 'namaste'], res: "Hello! I am Lakshmi Assistant. How can I help you support our mission today?" },
+      { keys: ['how are you', 'how do you do', 'whats up', "what's up"], res: "I'm functioning perfectly, thank you! Ready to help you with anything related to Lakshmi NGO." },
+      { keys: ['thank', 'thanks', 'thx', 'appreciate'], res: "You're very welcome! Let me know if you need any more assistance." },
+      { keys: ['bye', 'goodbye', 'see ya', 'quit'], res: "Goodbye! Take care and thank you for connecting with Lakshmi NGO." },
       { keys: ['poverty', 'homeless', 'slum'], res: "Poverty is a systemic challenge we fight every day. We believe education and basic safety are the first steps to breaking the cycle. That's why our Slum Education and Ration drives are so vital." },
       { keys: ['future', 'vision', 'goal'], res: "Our vision is a Mumbai where every life—regardless of age, gender, or background—is cherished and protected. We aim for zero-vulnerability by 2030." },
       { keys: ['technology', 'ai', 'chatbot'], res: "I am Lakshmi Assistant, an AI interface designed to bridge the gap between our missions and you. I help log complaints, guide volunteers, and ensure our field operations remain transparent." }
@@ -66,11 +70,24 @@ const AIChatbot = () => {
 
     // Find first match
     for (const item of [...missionMap, ...generalMap]) {
-      if (item.keys.some(k => t.includes(k))) return item.res;
+      // Use exact word match for short keywords like 'hi', 'hey' to avoid false positives in words like 'this' or 'they'
+      if (item.keys.some(k => {
+        if (k.length <= 3) {
+          const regex = new RegExp(`\\b${k}\\b`, 'i');
+          return regex.test(t);
+        }
+        return t.includes(k);
+      })) {
+        return item.res;
+      }
     }
 
-    // High-Quality Default Catch-All
-    return "That's a profound question. As Lakshmi Assistant, I focus on protecting lives and the environment in Mumbai. While I'm still learning about topics outside our core missions, I can tell you that everything—from global politics to science—eventually impacts our community's well-being. How can I help you support our mission today?";
+    // High-Quality Default Catch-All that acknowledges the user's input directly
+    if (t.endsWith('?')) {
+      return `That's a very thoughtful question! While my primary expertise lies in Lakshmi NGO's programs—like child education, women's safety, and environmental protection—I'm always eager to learn. What else would you like to know about our work?`;
+    }
+
+    return `I understand! Thank you for sharing that. As the Lakshmi Assistant, I'm here to ensure you have all the information you need about our volunteer programs, donation drives, and community missions. Feel free to ask me anything specific!`;
   };
 
   useEffect(() => {
