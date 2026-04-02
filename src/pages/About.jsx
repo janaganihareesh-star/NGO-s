@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import TeamCard from '../components/TeamCard';
 import SEO from '../components/SEO';
+import ImpactCTA from '../components/ImpactCTA';
 import { Target, Eye, Globe, Zap, Heart, Shield } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -169,11 +170,10 @@ const About = () => {
           </div>
         </div>
       </section>
-
       {/* Team Section */}
       <section className="py-24">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold mb-4 uppercase">
+          <h2 className="text-4xl md:text-5xl font-heading font-black mb-4 uppercase">
             THE MINDS BEHIND <span className="text-primary-gold font-bold">CHANGE</span>
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto mb-16">
@@ -187,6 +187,8 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      <ImpactCTA title="Ready to join the Movement?" />
     </motion.div>
   );
 };

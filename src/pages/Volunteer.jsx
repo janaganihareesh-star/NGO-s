@@ -210,7 +210,7 @@ const Volunteer = () => {
             </div>
           </motion.div>
         );
-      case 4:
+      case 4: {
         const currentData = watch();
         return (
           <motion.div
@@ -254,6 +254,7 @@ const Volunteer = () => {
             </div>
           </motion.div>
         );
+      }
       default:
         return null;
     }

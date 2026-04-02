@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Menu, X, Sun, Moon, ChevronDown, Heart, Shield, Home, Users, BookOpen, Trees, Baby } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

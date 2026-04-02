@@ -62,7 +62,7 @@ const ContactSection = () => {
       console.log('Form Submit:', formData);
       toast.success("Thank you for reaching out! We'll contact you soon.");
       setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);

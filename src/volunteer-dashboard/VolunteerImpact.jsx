@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Award, Zap, Star, Shield, Trophy, Target, ArrowRight, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 
 const VolunteerImpact = () => {

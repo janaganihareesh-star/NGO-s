@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, ExternalLink, MapPin, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
+import ImpactCTA from '../components/ImpactCTA';
 
 const ProjectsData = [
   {
@@ -160,6 +161,10 @@ const Works = () => {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        <div className="mt-24">
+          <ImpactCTA title="Support Our Global Missions" />
+        </div>
       </div>
 
       {/* Project Detail Modal */}

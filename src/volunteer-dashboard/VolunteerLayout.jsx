@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Award, Bell, LogOut, Menu, HeartHandshake, Settings, BookOpen } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { LayoutDashboard, Users, Award, Bell, LogOut, Menu, HeartHandshake, Settings, BookOpen, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocationTracker } from '../hooks/useLocationTracker';
 
 const VolunteerSidebar = ({ isOpen, setIsOpen }) => {
   const { logout, currentUser } = useAuth();
@@ -112,6 +113,7 @@ const VolunteerSidebar = ({ isOpen, setIsOpen }) => {
 };
 
 const VolunteerLayout = () => {
+  useLocationTracker();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     { title: 'Safety Refresh Mandatory', desc: 'Complete Q4 module by Oct 31.', color: 'bg-rose-500' },
@@ -138,6 +140,14 @@ const VolunteerLayout = () => {
           </div>
 
           <div className="flex items-center gap-4">
+             {/* Live Location Pulse */}
+             <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-1">
+                   <Radio size={12} /> Live Safety Pulse Active
+                </span>
+             </div>
+
              <div className="relative group">
                 <button className="p-3 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl border border-gray-200 dark:border-white/10 hover:border-primary-gold/50 transition-all relative">
                    <Bell size={20} />

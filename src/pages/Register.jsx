@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../context/ThemeContext';
 import { UserPlus, Mail, Lock, User, Briefcase, MapPin, Sparkles, ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';

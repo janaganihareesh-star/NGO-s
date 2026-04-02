@@ -120,7 +120,7 @@ const AIChatbot = () => {
             timestamp: serverTimestamp()
           });
           toast.success("Mission Signal Sent: Complaint Logged", { icon: <AlertCircle className="text-primary-gold" /> });
-        } catch (err) { console.warn("Sync failing."); }
+        } catch { console.warn("Sync failing."); }
       }
 
       // 2. AI Decision Logic

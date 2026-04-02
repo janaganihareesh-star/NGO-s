@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, Clock, Star, Users, ArrowRight, CheckCircle, Info } from 'lucide-react';
 import SEO from '../components/SEO';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { db } from '../firebase/config';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from 'react-toastify';
@@ -52,7 +52,7 @@ const VolunteerCampaigns = () => {
         const snap = await getDocs(q);
         const joinedSet = new Set(snap.docs.map(doc => doc.data().campaignId));
         setJoinedCampaigns(joinedSet);
-      } catch (err) { console.warn("RSVP fetch failed."); }
+      } catch { console.warn("RSVP fetch failed."); }
     };
     fetchRSVPs();
   }, [currentUser]);
@@ -73,11 +73,13 @@ const VolunteerCampaigns = () => {
       try {
         const userRef = doc(db, 'users', currentUser.uid);
         await updateDoc(userRef, { impactPoints: increment(100) });
-      } catch(e) {}
+      } catch(err) {
+        console.warn("User impact points sync skipped:", err.message);
+      }
 
       setJoinedCampaigns(prev => new Set([...prev, camp.id]));
       toast.success(`Mission Active: Joining ${camp.title}`);
-    } catch (err) {
+    } catch {
       toast.error("Deployment failed. Check network.");
     } finally {
       setIsSyncing(false);

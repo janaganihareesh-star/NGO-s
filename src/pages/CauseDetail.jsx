@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Baby, Users, Trees, Shield, Heart, ArrowRight, Quote, CheckCircle2, TrendingUp, HelpCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import ImpactCTA from '../components/ImpactCTA';
 
 const causeData = {
   'education': {
@@ -247,27 +248,8 @@ const CauseDetail = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-32">
-        <div className="container mx-auto px-6 text-center">
-           <div className="max-w-4xl mx-auto glass p-20 rounded-[4rem] border-primary-gold/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-full bg-gold-gradient opacity-[0.03]" />
-              <HelpCircle className="mx-auto text-primary-gold mb-8" size={64} />
-              <h2 className="text-5xl md:text-7xl font-heading font-black text-white mb-8 uppercase leading-none">
-                Ready to make <br /> an <span className="text-primary-gold italic">Impact?</span>
-              </h2>
-              <p className="text-primary-offwhite/50 text-xl mb-12 max-w-2xl mx-auto">
-                Your contribution directly funds our operations in rural India. Join us in building a more equitable and sustainable world.
-              </p>
-              <Link
-                to="/donate"
-                className="inline-flex items-center gap-3 px-16 py-6 bg-white text-primary-navy font-black text-xl rounded-2xl hover:bg-primary-gold hover:scale-105 transition-all shadow-2xl"
-              >
-                DONATE TO THIS CAUSE <ArrowRight size={24} />
-              </Link>
-           </div>
-        </div>
-      </section>
+      {/* Global Impact CTA */}
+      <ImpactCTA />
 
       <footer className="py-20 text-center opacity-30">
         <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white">© 2026 LAKSHMI NGO TRUST • RADICAL TRANSPARENCY</p>

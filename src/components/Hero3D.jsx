@@ -10,7 +10,7 @@ const ParticleNetwork = ({ isDarkMode }) => {
   const pointsRef = useRef();
   
   const count = 1500;
-  const [positions, connections] = useMemo(() => {
+  const [positions] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 100;
@@ -20,7 +20,7 @@ const ParticleNetwork = ({ isDarkMode }) => {
     return [pos, []];
   }, []);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (pointsRef.current) {
       pointsRef.current.rotation.y += 0.001;
       pointsRef.current.rotation.x += 0.0005;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck, BarChart3, Download } from 'lucide-react';
 import { db } from '../firebase/config';
@@ -10,6 +10,7 @@ import {
   BarElement, ArcElement, Title, Tooltip, Legend
 } from 'chart.js';
 import { useTheme } from '../context/ThemeContext';
+import VolunteerLiveMap from './VolunteerLiveMap';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -44,6 +45,7 @@ const AdminDashboard = () => {
   
   // Tables
   const [recentVolunteers, setRecentVolunteers] = useState([]);
+  const [todayVolunteers, setTodayVolunteers] = useState([]);
   const [recentComplaints, setRecentComplaints] = useState([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -68,6 +70,17 @@ const AdminDashboard = () => {
         labels: sortedCities.map(c => c[0]),
         data: sortedCities.map(c => c[1])
       });
+
+      // Filter for Today's Registrations
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const filteredToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(v => {
+          if (!v.createdAt) return false;
+          const createdDate = v.createdAt.toDate ? v.createdAt.toDate() : new Date(v.createdAt);
+          return createdDate >= today;
+        });
+      setTodayVolunteers(filteredToday);
     });
 
     // 2. Fetch live Donations
@@ -235,6 +248,20 @@ ${recentComplaints.map(c => `- [${c.priority || 'Normal'}] ${c.status.toUpperCas
         </div>
       </div>
 
+      {/* LIVE DEPLOYMENT RADAR */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>
+            Live Deployment <span className="text-primary-gold">Radar</span>
+          </h3>
+          <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+            <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500">Real-time HQ Sync</span>
+          </div>
+        </div>
+        <VolunteerLiveMap />
+      </div>
+
       {/* COMPLAINTS SECTION HIGHER AS REQUESTED */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold lg:col-span-2 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
@@ -339,6 +366,62 @@ ${recentComplaints.map(c => `- [${c.priority || 'Normal'}] ${c.status.toUpperCas
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* TODAY'S INTAKE DETAIL */}
+        <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
+           <div className="flex justify-between items-center mb-6">
+             <div>
+               <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-primary-gold`}>New Agents of Today</h3>
+               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Recruitment drive & sectoral distribution</p>
+             </div>
+             <span className="px-3 py-1 bg-primary-gold/10 text-primary-gold border border-primary-gold/20 rounded-full text-[10px] font-black uppercase tracking-widest">
+                {todayVolunteers.length} Joined
+             </span>
+           </div>
+           
+           <div className="overflow-x-auto no-scrollbar">
+             <table className="w-full text-left border-collapse min-w-[500px]">
+               <thead>
+                 <tr className={`${isDarkMode ? 'border-b border-white/20' : 'border-b border-gray-200'}`}>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Identity</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Sector / Interest</th>
+                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Time</th>
+                 </tr>
+               </thead>
+               <tbody>
+                  {todayVolunteers.length === 0 ? (
+                    <tr><td colSpan="3" className="py-10 text-center text-gray-500 text-xs font-bold uppercase tracking-widest italic">No new deployments recorded today</td></tr>
+                  ) : (
+                    todayVolunteers.map(vol => (
+                      <tr key={vol.id} className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors group`}>
+                        <td className="py-4 flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-primary-gold/10 flex items-center justify-center text-primary-gold font-black text-[10px] border border-primary-gold/20">
+                              {vol.fullName?.charAt(0) || 'V'}
+                           </div>
+                           <div className="flex flex-col">
+                              <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'} font-bold`}>{vol.fullName}</span>
+                              <span className="text-[8px] text-gray-500 uppercase font-black">{vol.city || 'Mumbai Sector'}</span>
+                           </div>
+                        </td>
+                        <td className="py-4">
+                           <span className={`text-[10px] px-3 py-1 rounded-lg uppercase font-black tracking-widest border ${
+                             vol.interest === 'Protection' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
+                             vol.interest === 'Health' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                             vol.interest === 'Education' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+                           }`}>
+                             {vol.interest || 'General'}
+                           </span>
+                        </td>
+                        <td className="py-4 text-xs text-gray-500 font-medium">
+                           {vol.createdAt?.toDate ? vol.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Live'}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+               </tbody>
+             </table>
+           </div>
+        </div>
+
         <div className={`glass p-8 rounded-3xl border-t-4 border-emerald-500 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
            <div className="flex justify-between items-center mb-6">
              <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-emerald-500`}>Active Agent Registry</h3>
@@ -382,47 +465,6 @@ ${recentComplaints.map(c => `- [${c.priority || 'Normal'}] ${c.status.toUpperCas
            </div>
         </div>
 
-        <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
-           <div className="flex justify-between items-center mb-6">
-             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-primary-gold`}>Global Resolution Status</h3>
-             <Link to="/admin/complaints" className="text-[10px] text-primary-gold hover:text-white transition-colors uppercase font-black tracking-widest bg-primary-gold/10 px-3 py-1 rounded-full border border-primary-gold/20">View Detailed Log →</Link>
-           </div>
-           <div className="overflow-x-auto no-scrollbar">
-             <table className="w-full text-left border-collapse min-w-[500px]">
-               <thead>
-                 <tr className={`${isDarkMode ? 'border-b border-white/20' : 'border-b border-gray-200'}`}>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Priority</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Transcript</th>
-                   <th className="py-4 text-[10px] uppercase tracking-widest text-gray-500 dark:text-white/60 font-black">Status</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {recentComplaints.map(comp => (
-                   <tr 
-                     key={comp.id} 
-                     onClick={() => setSelectedComplaint(comp)}
-                     className={`${isDarkMode ? 'border-b border-white/5 hover:bg-white/5' : 'border-b border-gray-50 hover:bg-gray-50'} transition-colors cursor-pointer group`}
-                   >
-                     <td className="py-4">
-                        <span className={`text-[10px] px-2 py-1 rounded-full uppercase font-black tracking-widest ${
-                          comp.priority === 'Critical' ? 'bg-red-500/20 text-red-500' :
-                          comp.priority === 'Urgent' ? 'bg-orange-500/20 text-orange-500' : 'bg-gray-500/20 text-gray-400'
-                        }`}>
-                          {comp.priority || 'Normal'}
-                        </span>
-                     </td>
-                     <td className={`py-4 text-xs ${isDarkMode ? 'text-white' : 'text-gray-900'} max-w-[200px] truncate pr-4 italic group-hover:text-primary-gold transition-colors`}>"{comp.transcript}"</td>
-                     <td className="py-4 text-xs font-black uppercase">
-                        <span className={`px-2 py-1 rounded-md text-[10px] ${comp.status === 'open' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'}`}>
-                           {comp.status}
-                        </span>
-                     </td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-           </div>
-        </div>
       </div>
 
       {/* Volunteer Detail Modal */}

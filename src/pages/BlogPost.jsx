@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, Clock, ChevronLeft, Share2, Heart, MessageSquare, Send, Trash2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import ImpactCTA from '../components/ImpactCTA';
 import { toast } from 'react-toastify';
 
 const BlogPostsData = [
@@ -402,6 +403,8 @@ const BlogPost = () => {
                 )}
             </div>
         </div>
+
+        <ImpactCTA title="Support this Impact Story" />
 
         {/* Author Footer */}
         <div className="mt-32 p-12 glass rounded-[3rem] border border-gray-200 dark:border-white/5 flex flex-col md:flex-row gap-10 items-center text-center md:text-left shadow-xl">

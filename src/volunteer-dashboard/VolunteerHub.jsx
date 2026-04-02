@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { Shield, Sparkles, MapPin, Calendar, Clock, Star, ArrowRight, CheckCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import { db } from '../firebase/config';
@@ -22,7 +22,7 @@ const VolunteerHub = () => {
         const snap = await getDocs(q);
         const joinedSet = new Set(snap.docs.map(doc => doc.data().campaignId));
         setJoinedCampaigns(joinedSet);
-      } catch (err) {
+      } catch {
         console.warn("Failed to fetch RSVPs (Mock mode active)");
       }
     };
@@ -53,7 +53,9 @@ const VolunteerHub = () => {
         await updateDoc(userRef, {
           impactPoints: increment(50)
         });
-      } catch (e) { /* user doc might not exist yet */ }
+      } catch (err) { 
+        console.warn("Impact points sync skipped (User doc may not exist):", err.message);
+      }
 
       setJoinedCampaigns(prev => new Set([...prev, campaign.id]));
       toast.success(`Success! Joining ${campaign.title}`);
@@ -115,7 +117,7 @@ const VolunteerHub = () => {
             <div className="flex justify-end">
                <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-[2rem] text-center w-full max-w-xs shadow-2xl ring-1 ring-black/5">
                   <Star size={40} className="mx-auto text-yellow-300 mb-4 drop-shadow-[0_0_15px_rgba(253,224,71,0.5)]" />
-                  <p className="text-4xl font-black font-heading tracking-widest mb-1">{currentUser?.impactPoints || 120}</p>
+                  <p className="text-4xl font-black font-heading tracking-widest mb-1">{currentUser?.impactPoints || 0}</p>
                   <p className="text-[10px] uppercase font-bold tracking-widest text-white/70">Lifetime Impact Points</p>
                </div>
             </div>

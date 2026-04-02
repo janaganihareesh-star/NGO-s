@@ -96,7 +96,7 @@ const Contact = () => {
 
     // Placeholder for EmailJS - normally you'd use your service/template IDs
     emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form.current, 'YOUR_PUBLIC_KEY')
-      .then((result) => {
+      .then(() => {
           setSuccess(true);
           setLoading(false);
       }, (error) => {

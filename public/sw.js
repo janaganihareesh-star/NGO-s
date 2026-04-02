@@ -2,7 +2,7 @@
 const CACHE_NAME = 'lakshmi-v2';
 
 // Install event - skip waiting to activate immediately
-self.addEventListener('install', event => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 

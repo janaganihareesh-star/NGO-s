@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { db } from '../firebase/config';
-import { doc, setDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 // Mock database of authorized personnel and volunteers
 const MOCK_USERS = {
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
         const email = userData.email.toLowerCase();
@@ -81,6 +83,7 @@ export const AuthProvider = ({ children }) => {
           ...userData,
           uid: uid,
           email: email,
+          impactPoints: 0,
           createdAt: new Date()
         };
 
@@ -149,6 +152,3 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};

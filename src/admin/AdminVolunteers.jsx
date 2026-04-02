@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { Users, Mail, MapPin, Trash2, ShieldCheck, UserCheck, Search, Filter } from 'lucide-react';
+import { Users, Mail, MapPin, Trash2, ShieldCheck, UserCheck, Search, Filter, Radio } from 'lucide-react';
 import { toast } from 'react-toastify';
+import VolunteerLiveMap from './VolunteerLiveMap';
 
 const AdminVolunteers = () => {
   const [volunteers, setVolunteers] = useState([]);
@@ -24,7 +25,7 @@ const AdminVolunteers = () => {
       try {
         await deleteDoc(doc(db, 'volunteers', id));
         toast.success("Volunteer removed successfully");
-      } catch (err) {
+      } catch {
         toast.error("Failed to remove volunteer");
       }
     }
@@ -35,7 +36,7 @@ const AdminVolunteers = () => {
     try {
       await updateDoc(doc(db, 'volunteers', id), { status: newStatus });
       toast.info(`Volunteer status set to ${newStatus}`);
-    } catch (err) {
+    } catch {
       toast.error("Failed to update status");
     }
   };
@@ -48,8 +49,8 @@ const AdminVolunteers = () => {
   });
 
   return (
-    <div className="font-body animate-in fade-in duration-700">
-      <div className="glass p-8 rounded-3xl border border-white/5 mb-8 bg-gradient-to-r from-emerald-500/10 to-transparent">
+    <div className="font-body animate-in fade-in duration-700 space-y-8">
+      <div className="glass p-8 rounded-3xl border border-white/5 bg-gradient-to-r from-emerald-500/10 to-transparent">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-3xl font-heading font-black text-white uppercase tracking-wider flex items-center gap-3">
@@ -80,6 +81,21 @@ const AdminVolunteers = () => {
             </select>
           </div>
         </div>
+      </div>
+
+      {/* NEXUS LIVE RADAR */}
+      <div className="glass rounded-[3rem] border border-white/5 relative overflow-hidden shadow-2xl">
+         <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+            <div>
+               <h3 className="text-xl font-heading font-black text-white uppercase tracking-widest flex items-center gap-3">
+                  <Radio className="text-primary-gold animate-pulse" /> NEXUS LIVE RADAR
+               </h3>
+               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Real-time deployment tracking for active agents.</p>
+            </div>
+         </div>
+         <div className="p-2">
+            <VolunteerLiveMap />
+         </div>
       </div>
 
       <div className="glass rounded-3xl border border-white/5 overflow-hidden w-full overflow-x-auto no-scrollbar shadow-2xl">
