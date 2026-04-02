@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck, BarChart3, Download } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
@@ -136,6 +137,44 @@ const AdminDashboard = () => {
     };
   }, []);
 
+  const handleGenerateReport = () => {
+    const reportDate = new Date().toLocaleString();
+    const reportContent = `
+=========================================
+      LAKSHMI NGO - NEXUS REPORT
+        Generated: ${reportDate}
+=========================================
+
+--- MISSION SUMMARY ---
+Total Volunteers: ${metrics.volunteers}
+Today's Funding: ₹${metrics.donationsToday.toLocaleString('en-IN')}
+Monthly Revenue: ₹${metrics.donationsMonth.toLocaleString('en-IN')}
+Grand Total Funding: ₹${metrics.donationsTotal.toLocaleString('en-IN')}
+Resolution Rate: ${metrics.resolvedComplaints} / ${metrics.openComplaints + metrics.resolvedComplaints}
+
+--- RECENT AGENTS ---
+${recentVolunteers.map(v => `- ${v.fullName} (${v.email}) | ${v.city || 'Global'}`).join('\n')}
+
+--- INCIDENT LOG ---
+${recentComplaints.map(c => `- [${c.priority || 'Normal'}] ${c.status.toUpperCase()}: "${c.transcript}"`).join('\n')}
+
+=========================================
+      END OF TRANSMISSION
+=========================================
+    `;
+
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `NGO_Nexus_Report_${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Nexus Intelligence Report generated and saved.");
+  };
+
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -165,7 +204,12 @@ const AdminDashboard = () => {
           <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mt-1 font-bold`}>Real-time platform analytics & administration.</p>
         </div>
         <div className="flex gap-4">
-           <button className="px-6 py-2 bg-primary-gold text-primary-navy font-bold rounded-full text-xs uppercase tracking-widest hover:bg-white hover:text-primary-gold transition-all shadow-lg shadow-primary-gold/20">Generate Report</button>
+           <button 
+             onClick={handleGenerateReport}
+             className="px-6 py-2 bg-primary-gold text-primary-navy font-black rounded-full text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-primary-gold transition-all shadow-lg shadow-primary-gold/20 flex items-center gap-2 group"
+           >
+             <Download size={14} className="group-hover:bounce" /> Generate Report
+           </button>
         </div>
       </div>
 
@@ -195,8 +239,8 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold lg:col-span-2 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
            <div className="flex justify-between items-center mb-6">
-             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>Recent Complaints</h3>
-             <a href="/admin/complaints" className="text-xs text-primary-gold hover:text-white transition-colors uppercase font-bold">View All →</a>
+             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-primary-gold`}>Intelligence Feed (Complaints)</h3>
+             <Link to="/admin/complaints" className="text-[10px] text-primary-gold hover:text-white transition-colors uppercase font-black tracking-widest bg-primary-gold/10 px-3 py-1 rounded-full border border-primary-gold/20">View Detailed Log →</Link>
            </div>
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">
@@ -297,8 +341,8 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className={`glass p-8 rounded-3xl border-t-4 border-emerald-500 ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
            <div className="flex justify-between items-center mb-6">
-             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>Recent Volunteers</h3>
-             <a href="/volunteer" className="text-xs text-emerald-500 hover:text-white transition-colors uppercase font-bold">View Directory →</a>
+             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-emerald-500`}>Active Agent Registry</h3>
+             <Link to="/admin/volunteers" className="text-[10px] text-emerald-500 hover:text-white transition-colors uppercase font-black tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">View Agent Directory →</Link>
            </div>
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">
@@ -340,8 +384,8 @@ const AdminDashboard = () => {
 
         <div className={`glass p-8 rounded-3xl border-t-4 border-primary-gold ${isDarkMode ? 'border-x-white/5 border-b-white/5' : 'border-x-gray-200 border-b-gray-200 bg-white shadow-sm'}`}>
            <div className="flex justify-between items-center mb-6">
-             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm`}>Recent Complaints</h3>
-             <a href="/admin/complaints" className="text-xs text-primary-gold hover:text-white transition-colors uppercase font-bold">View All →</a>
+             <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-black uppercase tracking-widest text-sm text-primary-gold`}>Global Resolution Status</h3>
+             <Link to="/admin/complaints" className="text-[10px] text-primary-gold hover:text-white transition-colors uppercase font-black tracking-widest bg-primary-gold/10 px-3 py-1 rounded-full border border-primary-gold/20">View Detailed Log →</Link>
            </div>
            <div className="overflow-x-auto no-scrollbar">
              <table className="w-full text-left border-collapse min-w-[500px]">

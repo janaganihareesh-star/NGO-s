@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Calendar, User, ArrowRight, Share2, Heart, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import SEO from '../components/SEO';
 
 const BlogPostsData = [
@@ -10,9 +11,9 @@ const BlogPostsData = [
     title: "How Education is Breaking the Cycle of Poverty in Rural Schools",
     excerpt: "We visited our recent school activation in the Himalayan foothills to see the real-world impact of our digital literacy program.",
     category: "Education",
-    author: "Lakshmi Admin",
+    author: "Elena Rodriguez",
     date: "Oct 24, 2025",
-    image: "/indian_education_1775031032479.png",
+    image: "/assets/blog/edu_main.png",
     readTime: "6 min read",
     likes: 124,
     comments: 18
@@ -22,9 +23,9 @@ const BlogPostsData = [
     title: "Women Entrepreneurs: Transforming Local Markets through Micro-loans",
     excerpt: "Story of how local women in rural Rajasthan started their own textile businesses with just ₹15,000 each and a vision for their community.",
     category: "Empowerment",
-    author: "Sarah Jenkins",
+    author: "Shanti Devi",
     date: "Oct 20, 2025",
-    image: "/indian_empowerment_1775031117062.png",
+    image: "/assets/blog/emp_main.png",
     readTime: "8 min read",
     likes: 342,
     comments: 29
@@ -34,9 +35,9 @@ const BlogPostsData = [
     title: "The Green Revolution: Reforestation Drives in the Western Ghats",
     excerpt: "Documenting our journey of planting 50,000 saplings in a month and training locals in sustainable agro-forestry.",
     category: "Environment",
-    author: "Dr. Marc Chen",
+    author: "Dr. Mahesh Kumar",
     date: "Oct 15, 2025",
-    image: "/indian_environment_1775031152562.png",
+    image: "/assets/blog/env_main.png",
     readTime: "12 min read",
     likes: 850,
     comments: 54
@@ -46,9 +47,9 @@ const BlogPostsData = [
     title: "Protection for All: Our New Legal Aid Center in Bihar",
     excerpt: "Behind the scenes of our new shelter opening, providing a haven and legal aid for domestic violence survivors in rural sectors.",
     category: "Protection",
-    author: "Lakshmi Admin",
+    author: "Saira Khan",
     date: "Oct 12, 2025",
-    image: "/indian_protection_1775031202860.png",
+    image: "/assets/blog/pro_main.png",
     readTime: "5 min read",
     likes: 560,
     comments: 42
@@ -58,7 +59,7 @@ const BlogPostsData = [
     title: "Bridging the Divide: AI and Coding Labs for Village Youth",
     excerpt: "Our tech-for-good initiative is turning rural villages into tech hubs, teaching coding and AI to the next generation of Indian innovators.",
     category: "Tech",
-    author: "Rajesh Kumar",
+    author: "Dr. Vikram Malhotra",
     date: "Oct 10, 2025",
     image: "/indian_tech_1775031255974.png",
     readTime: "10 min read",
@@ -83,6 +84,27 @@ const Blog = () => {
   const filteredPosts = activeCategory === "All" 
     ? BlogPostsData 
     : BlogPostsData.filter(post => post.category === activeCategory);
+
+  const handleShare = async (e, post) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const shareUrl = `${window.location.origin}/blog/${post.id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post.title,
+          text: `Check out this Indian Impact Story: ${post.title}`,
+          url: shareUrl
+        });
+      } catch (err) {
+        console.log("Error sharing:", err);
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Link copied to clipboard!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#050508] pt-40 pb-24 font-body">
@@ -175,9 +197,12 @@ const Blog = () => {
                       alt={post.title} 
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute top-4 right-4 p-3 bg-black/50 backdrop-blur-md rounded-2xl text-white">
+                    <button 
+                      onClick={(e) => handleShare(e, post)}
+                      className="absolute top-4 right-4 p-3 bg-black/50 backdrop-blur-md rounded-2xl text-white hover:bg-primary-gold hover:text-primary-navy transition-all z-20"
+                    >
                        <Share2 size={16} />
-                    </div>
+                    </button>
                   </div>
                   <div className="px-6 pb-8 flex-grow">
                      <span className="text-[10px] font-black uppercase tracking-widest text-primary-gold mb-3 block">

@@ -35,6 +35,7 @@ const AdminLayout = lazy(() => import('./admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./admin/AdminDashboard'));
 const AdminComplaints = lazy(() => import('./admin/AdminComplaints'));
 const AdminDonations = lazy(() => import('./admin/AdminDonations'));
+const AdminVolunteers = lazy(() => import('./admin/AdminVolunteers'));
 
 
 
@@ -128,6 +129,7 @@ const AnimatedRoutes = () => {
             <Route index element={<AdminDashboard />} />
             <Route path="complaints" element={<AdminComplaints />} />
             <Route path="donations" element={<AdminDonations />} />
+            <Route path="volunteers" element={<AdminVolunteers />} />
             <Route path="settings" element={<GeneralSettings />} />
           </Route>
 

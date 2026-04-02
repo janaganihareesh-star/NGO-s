@@ -18,8 +18,8 @@ const BlogPostsData = [
       </p>
       
       <div className="grid md:grid-cols-2 gap-8 my-16">
-        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Students learning" />
-        <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Classroom environment" />
+        <img src="/assets/blog/edu_v1.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Students learning" />
+        <img src="/assets/blog/edu_v2.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Classroom environment" />
       </div>
 
       <h3 className="text-3xl font-heading font-black mt-12 mb-6 uppercase">The Digital Divide</h3>
@@ -32,7 +32,7 @@ const BlogPostsData = [
         He represents a generation that will no longer be limited by their geography.
       </div>
       
-      <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&q=80&w=1200" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Tech education" />
+      <img src="/assets/blog/edu_main.png" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Tech education" />
 
       <p className="mb-6 leading-relaxed">
         Our impact isn't just about the hardware. We've trained four local teachers to become mentors, ensuring the sustainability of the project. 
@@ -42,7 +42,7 @@ const BlogPostsData = [
     category: "Education",
     author: "Elena Rodriguez",
     date: "Oct 24, 2025",
-    image: "/indian_education_1775031032479.png",
+    image: "/assets/blog/edu_main.png",
     authorImage: "/assets/authors/elena.png",
     readTime: "6 min read",
     likes: 124,
@@ -62,8 +62,8 @@ const BlogPostsData = [
       </p>
       
       <div className="grid md:grid-cols-2 gap-8 my-16">
-        <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Woman artisan" />
-        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Women collaborating" />
+        <img src="/assets/blog/emp_v1.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Woman artisan" />
+        <img src="/assets/blog/emp_v2.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Women collaborating" />
       </div>
 
       <h3 className="text-3xl font-heading font-black mt-12 mb-6 uppercase">The Ripple Effect</h3>
@@ -74,7 +74,7 @@ const BlogPostsData = [
         "I used to work 12 hours a day and still have nothing to eat. Today, I employ three women from my village, and we ship our fabrics directly to boutique stores in Mumbai." — Sunita Devi
       </div>
       
-      <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Market selling" />
+      <img src="/assets/blog/emp_main.png" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Market selling" />
 
       <p className="mb-6 leading-relaxed">
         This is what true empowerment looks like. It isn't charity; it is equitable investment in human capital. We plan to expand our micro-financing initiative to 50 more villages by early next year.
@@ -83,7 +83,7 @@ const BlogPostsData = [
     category: "Empowerment",
     author: "Shanti Devi",
     date: "Oct 20, 2025",
-    image: "/indian_empowerment_1775031117062.png",
+    image: "/assets/blog/emp_main.png",
     authorImage: "/assets/authors/shanti.png",
     readTime: "8 min read",
     likes: 342,
@@ -103,8 +103,8 @@ const BlogPostsData = [
       </p>
       
       <div className="grid grid-cols-2 gap-8 my-16">
-        <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=800" className="w-full h-72 object-cover rounded-[3rem] shadow-2xl" alt="Planting a sapling" />
-        <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=800" className="w-full h-72 object-cover rounded-[3rem] shadow-2xl" alt="Deep forest" />
+        <img src="/assets/blog/env_v1.png" className="w-full h-72 object-cover rounded-[3rem] shadow-2xl" alt="Planting a sapling" />
+        <img src="/assets/blog/env_v2.png" className="w-full h-72 object-cover rounded-[3rem] shadow-2xl" alt="Deep forest" />
       </div>
 
       <h3 className="text-3xl font-heading font-black mt-12 mb-6 uppercase">Beyond Just Planting</h3>
@@ -112,7 +112,7 @@ const BlogPostsData = [
         Planting a tree is easy; ensuring it survives to adulthood is the real challenge. We've introduced state-of-the-art agro-forestry training for the locals, turning them into wardens of the forest. They learn how to harvest non-timber forest products symbiotically.
       </p>
 
-      <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Mountain ranges" />
+      <img src="/assets/blog/env_main.png" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Mountain ranges" />
 
       <p className="mb-6 leading-relaxed">
         We have officially planted our 50,000th sapling. With the monsoon fast approaching, the survival rate of these native trees (Jackfruit, Mahogany, Teak) is estimated to be over 85%. The Ghats are breathing again.
@@ -121,7 +121,7 @@ const BlogPostsData = [
     category: "Environment",
     author: "Dr. Mahesh Kumar",
     date: "Oct 15, 2025",
-    image: "/indian_environment_1775031152562.png",
+    image: "/assets/blog/env_main.png",
     authorImage: "/assets/authors/mahesh.png",
     readTime: "12 min read",
     likes: 850,
@@ -141,8 +141,8 @@ const BlogPostsData = [
       </p>
       
       <div className="grid md:grid-cols-2 gap-8 my-16">
-        <img src="https://images.unsplash.com/photo-1593113580332-ceec88db06b4?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Supporting hands" />
-        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Legal documents" />
+        <img src="/assets/blog/pro_main.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Supporting village family" />
+        <img src="/assets/blog/pro_v1.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Legal aid desk" />
       </div>
 
       <h3 className="text-3xl font-heading font-black mt-12 mb-6 uppercase">A Multi-Tiered Approach</h3>
@@ -154,7 +154,7 @@ const BlogPostsData = [
         "Justice shouldn't be a luxury reserved for those who can afford an attorney. Our clinic actively defends those who have been silenced."
       </div>
       
-      <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=1200" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Safe shelter" />
+      <img src="/assets/blog/pro_v2.png" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Safe shelter exterior" />
 
       <p className="mb-6 leading-relaxed">
         With the new legal wing operational, we anticipate assisting over 500 women this year in navigating the legal system towards a life of safety and autonomy.
@@ -163,7 +163,7 @@ const BlogPostsData = [
     category: "Protection",
     author: "Saira Khan",
     date: "Oct 12, 2025",
-    image: "/indian_protection_1775031202860.png",
+    image: "/assets/blog/pro_main.png",
     authorImage: "/assets/authors/saira.png",
     readTime: "5 min read",
     likes: 560,
@@ -183,8 +183,8 @@ const BlogPostsData = [
       </p>
       
       <div className="grid md:grid-cols-2 gap-8 my-16">
-        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Coding class" />
-        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=800" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Tech workshop" />
+        <img src="/indian_tech_1775031255974.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Coding class" />
+        <img src="/assets/blog/edu_v2.png" className="w-full h-80 object-cover rounded-[3rem] shadow-2xl" alt="Tech workshop" />
       </div>
 
       <h3 className="text-3xl font-heading font-black mt-12 mb-6 uppercase">From Consumers to Creators</h3>
@@ -195,7 +195,7 @@ const BlogPostsData = [
         "I built a script that tracks the local bus schedules because they are always late. Now my whole village uses it on their phones." — Rahul, 15
       </div>
       
-      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Modern computer lab" />
+      <img src="/indian_tech_1775031255974.png" className="w-full h-96 object-cover rounded-[3rem] my-16 shadow-2xl" alt="Modern computer lab" />
 
       <p className="mb-6 leading-relaxed">
         By providing these tools, we are unlocking vast human potential. Several of our first cohort students have already secured remote internships with tech firms in Bangalore. The divide is officially closing.
