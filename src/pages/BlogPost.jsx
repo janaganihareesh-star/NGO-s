@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, Clock, ChevronLeft, Share2, Heart, MessageSquare } from 'lucide-react';
+import { Calendar, User, Clock, ChevronLeft, Share2, Heart, MessageSquare, Send, Trash2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { toast } from 'react-toastify';
 
 const BlogPostsData = [
   {
@@ -42,11 +43,12 @@ const BlogPostsData = [
     author: "Elena Rodriguez",
     date: "Oct 24, 2025",
     image: "/indian_education_1775031032479.png",
+    authorImage: "/assets/authors/elena.png",
     readTime: "6 min read",
     likes: 124,
-    comments: 18,
+    comments: [],
     authorTitle: "Field Director",
-    authorBio: "Elena has spent the last 15 years developing sustainable education models across Southeast Asia. She leads our on-the-ground efforts in the Himalayan region."
+    authorBio: "Elena has spent the last 15 years developing sustainable education models across Rural India. She leads our on-the-ground efforts in the Himalayan region."
   },
   {
     id: 2,
@@ -79,14 +81,15 @@ const BlogPostsData = [
       </p>
     `,
     category: "Empowerment",
-    author: "Sarah Jenkins",
+    author: "Shanti Devi",
     date: "Oct 20, 2025",
     image: "/indian_empowerment_1775031117062.png",
+    authorImage: "/assets/authors/shanti.png",
     readTime: "8 min read",
     likes: 342,
-    comments: 29,
+    comments: [],
     authorTitle: "Micro-finance Lead",
-    authorBio: "Sarah specializes in rural economy revitalization and has successfully deployed over ₹20M in micro-loans to women-led cooperatives."
+    authorBio: "Shanti specializes in rural economy revitalization and has successfully deployed over ₹20M in micro-loans to women-led cooperatives in Rajasthan."
   },
   {
     id: 3,
@@ -116,14 +119,15 @@ const BlogPostsData = [
       </p>
     `,
     category: "Environment",
-    author: "Dr. Marc Chen",
+    author: "Dr. Mahesh Kumar",
     date: "Oct 15, 2025",
     image: "/indian_environment_1775031152562.png",
+    authorImage: "/assets/authors/mahesh.png",
     readTime: "12 min read",
     likes: 850,
-    comments: 54,
+    comments: [],
     authorTitle: "Chief Ecologist",
-    authorBio: "Dr. Marc Chen holds a PhD in Environmental Science and leads Lakshmi NGO's global climate resilience operations."
+    authorBio: "Dr. Mahesh Kumar holds a PhD in Environmental Science from IIT Bombay and leads Lakshmi NGO's reforestation efforts in the Western Ghats."
   },
   {
     id: 4,
@@ -160,11 +164,12 @@ const BlogPostsData = [
     author: "Saira Khan",
     date: "Oct 12, 2025",
     image: "/indian_protection_1775031202860.png",
+    authorImage: "/assets/authors/saira.png",
     readTime: "5 min read",
     likes: 560,
-    comments: 42,
-    authorTitle: "Lead Field Ethnographer",
-    authorBio: "Saira specializes in trauma-informed care and ensures all Lakshmi NGO shelters meet international humanitarian standards."
+    comments: [],
+    authorTitle: "Social Impact Lead",
+    authorBio: "Saira is a survivor-advocate who ensures all Lakshmi NGO shelters meet international humanitarian standards while honoring local cultural sensitivities."
   },
   {
     id: 5,
@@ -200,27 +205,85 @@ const BlogPostsData = [
     author: "Dr. Vikram Malhotra",
     date: "Oct 10, 2025",
     image: "/indian_tech_1775031255974.png",
+    authorImage: "/assets/authors/vikram.png",
     readTime: "10 min read",
     likes: 920,
-    comments: 65,
+    comments: [],
     authorTitle: "Head of Tech Innovation",
-    authorBio: "Dr. Vikram previously worked at top Silicon Valley firms before dedicating his life to democratizing technology access in India."
+    authorBio: "Dr. Vikram is a pioneer in rural ed-tech, dedicated to democratizing AI and coding access for the next generation of Indian village youth."
   }
 ];
 
 const BlogPost = () => {
   const { id } = useParams();
-  const post = BlogPostsData.find(p => p.id === parseInt(id)) || BlogPostsData[0];
+  const basePost = BlogPostsData.find(p => p.id === parseInt(id)) || BlogPostsData[0];
+  
+  // Interactive State
+  const [likesCount, setLikesCount] = useState(basePost.likes);
+  const [isLiked, setIsLiked] = useState(false);
+  const [comments, setComments] = useState([
+    { id: 1, user: "Community Member", text: "This is so inspiring! We need more projects like this.", date: "2 days ago" },
+    { id: 2, user: "Volunt_India", text: "I witnessed this firsthand in Bihar. The transformation is real.", date: "1 day ago" }
+  ]);
+  const [newComment, setNewComment] = useState("");
+
+  const handleLike = () => {
+    if (isLiked) {
+      setLikesCount(prev => prev - 1);
+      setIsLiked(false);
+    } else {
+      setLikesCount(prev => prev + 1);
+      setIsLiked(true);
+      toast.info("Thanks for the support!");
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: basePost.title,
+          text: `Check out this impact story from Lakshmi NGO: ${basePost.title}`,
+          url: window.location.href
+        });
+      } catch (err) {
+        console.log("Error sharing:", err);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    
+    const comment = {
+      id: Date.now(),
+      user: "You",
+      text: newComment,
+      date: "Just now"
+    };
+    
+    setComments([comment, ...comments]);
+    setNewComment("");
+    toast.success("Comment posted!");
+  };
+
+  const handleDeleteComment = (id) => {
+    setComments(comments.filter(c => c.id !== id));
+    toast.dark("Comment removed.");
+  };
 
   return (
     <div className="min-h-screen pt-32 pb-24 font-body">
       <SEO 
-        title={post.title} 
-        description={post.category + " Impact Story"}
+        title={basePost.title} 
+        description={basePost.category + " Impact Story"}
       />
 
       <div className="container mx-auto px-6 max-w-4xl">
-        {/* Back Link */}
         <Link 
           to="/blog" 
           className="inline-flex items-center gap-2 text-primary-gold font-black uppercase text-xs tracking-widest mb-12 hover:-translate-x-2 transition-transform"
@@ -228,70 +291,128 @@ const BlogPost = () => {
           <ChevronLeft size={16} /> BACK TO STORIES
         </Link>
 
-        {/* Hero Section */}
         <div className="mb-16">
           <span className="px-5 py-2 glass-gold text-primary-gold font-black text-xs rounded-full uppercase italic mb-6 inline-block tracking-widest border border-primary-gold/20">
-            {post.category}
+            {basePost.category}
           </span>
           <h1 className="text-4xl md:text-6xl font-heading font-black mb-10 leading-tight uppercase relative z-10">
-            {post.title}
+            {basePost.title}
           </h1>
           
           <div className="flex flex-wrap items-center gap-8 py-8 border-y border-white/5 text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-primary-offwhite/40">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full glass border border-white/10 flex items-center justify-center">
-                 <User size={18} className="text-primary-gold" />
+              <div className="w-10 h-10 rounded-full glass border border-white/10 flex items-center justify-center overflow-hidden">
+                 <img src={basePost.authorImage} alt={basePost.author} className="w-full h-full object-cover" />
               </div>
-              <span>By {post.author}</span>
+              <span>By {basePost.author}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-primary-gold" />
-              <span>{post.date}</span>
+              <span>{basePost.date}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock size={18} className="text-primary-gold" />
-              <span>{post.readTime}</span>
+              <span>{basePost.readTime}</span>
             </div>
           </div>
         </div>
 
-        {/* Banner Image */}
         <div className="relative h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden mb-16 shadow-2xl">
-          <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+          <img src={basePost.image} alt={basePost.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 shadow-[inset_0_0_50px_rgba(0,0,0,0.5)] pointer-events-none" />
         </div>
 
-        {/* Article Content */}
         <div className="custom-prose max-w-none text-gray-700 dark:text-primary-offwhite/60 text-lg leading-relaxed">
-          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div dangerouslySetInnerHTML={{ __html: basePost.content }} />
         </div>
 
-        {/* Interactions */}
+        {/* Interactions Row */}
         <div className="mt-20 pt-10 border-t border-gray-200 dark:border-white/5 flex flex-wrap justify-between items-center gap-8">
            <div className="flex items-center gap-6">
-              <button className="flex items-center gap-3 px-8 py-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black rounded-2xl hover:bg-rose-500 transition-all hover:text-white uppercase text-xs tracking-widest">
-                 <Heart size={18} /> {post.likes} LIKES
+              <button 
+                onClick={handleLike}
+                className={`flex items-center gap-3 px-8 py-3 border font-black rounded-2xl transition-all uppercase text-xs tracking-widest ${
+                  isLiked 
+                  ? 'bg-rose-500 text-white border-rose-500' 
+                  : 'bg-rose-500/10 border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white'
+                }`}
+              >
+                 <Heart size={18} className={isLiked ? 'fill-current' : ''} /> {likesCount} LIKES
               </button>
-              <button className="flex items-center gap-3 px-8 py-3 bg-primary-gold/10 border border-primary-gold/20 text-primary-gold font-black rounded-2xl hover:bg-primary-gold transition-all hover:text-primary-navy uppercase text-xs tracking-widest">
+              <button 
+                onClick={handleShare}
+                className="flex items-center gap-3 px-8 py-3 bg-primary-gold/10 border border-primary-gold/20 text-primary-gold font-black rounded-2xl hover:bg-primary-gold transition-all hover:text-primary-navy uppercase text-xs tracking-widest"
+              >
                  <Share2 size={18} /> SHARE STORY
               </button>
            </div>
            
            <div className="flex items-center gap-2 font-black text-xs uppercase tracking-widest text-gray-900 dark:text-white">
-              <MessageSquare size={18} className="text-primary-gold" /> {post.comments} COMMENTS
+              <MessageSquare size={18} className="text-primary-gold" /> {comments.length} COMMENTS
            </div>
         </div>
 
+        {/* Comment Section */}
+        <div className="mt-16 space-y-12">
+            <h3 className="text-2xl font-heading font-black dark:text-white uppercase tracking-wider">Leave a <span className="text-primary-gold">Comment</span></h3>
+            
+            <form onSubmit={handleAddComment} className="relative group">
+                <textarea 
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Share your thoughts on this mission..."
+                  className="w-full bg-white/5 border border-white/10 rounded-[2rem] p-8 text-sm focus:outline-none focus:border-primary-gold/50 transition-all min-h-[150px] font-body text-white"
+                />
+                <button 
+                  type="submit"
+                  className="absolute bottom-6 right-6 p-4 bg-primary-gold text-primary-navy rounded-2xl hover:scale-110 transition-all shadow-lg active:scale-95"
+                >
+                    <Send size={20} />
+                </button>
+            </form>
+
+            <div className="space-y-6">
+                {comments.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500 font-bold uppercase text-[10px] tracking-widest">No comments yet. Be the first!</div>
+                ) : (
+                  comments.map(comment => (
+                    <div key={comment.id} className="p-8 glass rounded-[2.5rem] border border-white/5 group hover:border-primary-gold/20 transition-all">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-primary-gold/10 border border-primary-gold/20 flex items-center justify-center text-primary-gold font-black text-xs">
+                                    {comment.user.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary-gold">{comment.user}</h4>
+                                    <p className="text-[8px] font-bold text-gray-500 uppercase">{comment.date}</p>
+                                </div>
+                            </div>
+                            {comment.user === "You" && (
+                              <button 
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="p-2 text-rose-500/50 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
+                        </div>
+                        <p className="text-primary-offwhite/70 text-sm leading-relaxed italic">"{comment.text}"</p>
+                    </div>
+                  ))
+                )}
+            </div>
+        </div>
+
         {/* Author Footer */}
-        <div className="mt-24 p-12 glass rounded-[3rem] border border-gray-200 dark:border-white/5 flex flex-col md:flex-row gap-10 items-center text-center md:text-left shadow-xl">
+        <div className="mt-32 p-12 glass rounded-[3rem] border border-gray-200 dark:border-white/5 flex flex-col md:flex-row gap-10 items-center text-center md:text-left shadow-xl">
            <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-primary-gold ring-8 ring-black/5 dark:ring-white/5 shadow-2xl flex-shrink-0">
-              <img src={`https://ui-avatars.com/api/?name=${post.author.replace(' ','+')}&background=0A0A0F&color=C9933A&size=200`} className="w-full h-full object-cover" />
+              <img src={basePost.authorImage} className="w-full h-full object-cover" />
            </div>
            <div>
-              <p className="text-primary-gold font-black uppercase text-xs tracking-widest mb-2">{post.authorTitle}</p>
-              <h4 className="text-2xl font-heading font-black mb-4 uppercase text-gray-900 dark:text-white">{post.author}</h4>
+              <p className="text-primary-gold font-black uppercase text-xs tracking-widest mb-2">{basePost.authorTitle}</p>
+              <h4 className="text-2xl font-heading font-black mb-4 uppercase text-gray-900 dark:text-white">{basePost.author}</h4>
               <p className="text-gray-600 dark:text-primary-offwhite/50 font-body leading-relaxed max-w-lg mb-6">
-                 {post.authorBio}
+                 {basePost.authorBio}
               </p>
               <div className="flex justify-center md:justify-start gap-4">
                  <span className="text-[10px] font-black uppercase border border-gray-300 dark:border-white/10 px-4 py-2 rounded-full text-gray-700 dark:text-white hover:border-primary-gold cursor-pointer transition-colors">Twitter</span>

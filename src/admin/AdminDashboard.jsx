@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck } from 'lucide-react';
+import { Users, DollarSign, MessageSquareWarning, FolderOpen, X, FileText, MapPin, Calendar, ShieldCheck, BarChart3 } from 'lucide-react';
 import { db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         <MetricCard title="Total Volunteers" value={metrics.volunteers} icon={<Users />} trend="+12%" />
         <MetricCard title="Today's Funding" value={`₹${metrics.donationsToday.toLocaleString('en-IN')}`} icon={<DollarSign />} trend="Today" />
-        <MetricCard title="Monthly Revenue" value={`₹${metrics.donationsMonth.toLocaleString('en-IN')}`} icon={<BarElement />} trend="Month" />
+        <MetricCard title="Monthly Revenue" value={`₹${metrics.donationsMonth.toLocaleString('en-IN')}`} icon={<BarChart3 />} trend="Month" />
         <MetricCard title="Global AllTime" value={`₹${metrics.donationsTotal.toLocaleString('en-IN')}`} icon={<DollarSign />} trend="All Time" />
         <div className={`glass p-6 rounded-3xl border-t-2 border-emerald-500 xl:col-span-1 ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-gray-200 shadow-xl shadow-emerald-500/5'} flex flex-col justify-between`}>
            <div>

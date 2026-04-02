@@ -12,25 +12,29 @@ const VolunteerModules = () => {
       id: 1, title: 'Slum Outreach Safety 101', type: 'Certification', 
       duration: '45 mins', status: 'In Progress', progress: 45,
       desc: 'Essential safety protocols for urban slum environments, child protection, and medical emergency basics.',
-      points: 200, icon: <Shield className="text-rose-500" />
+      points: 200, icon: <Shield className="text-rose-500" />,
+      videoId: 'Xh7o8G9D_N8'
     },
     { 
       id: 2, title: 'Laksmi NGO: Global Ethics', type: 'Compliance', 
       duration: '20 mins', status: 'Locked', progress: 0,
       desc: 'Understanding the NGO charter, ethical reporting, and community interaction guidelines.',
-      points: 100, icon: <BookOpen className="text-blue-500" />
+      points: 100, icon: <BookOpen className="text-blue-500" />,
+      videoId: 'pDkY-Rz287I'
     },
     { 
       id: 3, title: 'Advanced Disaster Response', type: 'Course', 
       duration: '2.5 hrs', status: 'Locked', progress: 0,
       desc: 'Specialized training for flood, fire, and earthquake relief operations in high-risk zones.',
-      points: 500, icon: <ListChecks className="text-purple-500" />
+      points: 500, icon: <ListChecks className="text-purple-500" />,
+      videoId: 'SjB-z-0J6n8'
     },
     { 
       id: 4, title: 'Digital Literacy Facilitator', type: 'Certification', 
       duration: '60 mins', status: 'Completed', progress: 100,
       desc: 'Certification to lead tech-drives and teach basic computer skills to orphans and slum youth.',
-      points: 300, icon: <CheckCircle className="text-emerald-500" />
+      points: 300, icon: <CheckCircle className="text-emerald-500" />,
+      videoId: 'p2K3fZOCn0k'
     }
   ];
 
@@ -162,7 +166,7 @@ const VolunteerModules = () => {
               <div className="flex-1 bg-black relative order-1 md:order-2 group min-h-[300px]">
                  <iframe 
                    className="w-full h-full absolute inset-0"
-                   src={`https://www.youtube.com/embed/S2H_A9E198A?autoplay=1&modestbranding=1&rel=0`}
+                   src={`https://www.youtube.com/embed/${activeModule.videoId || 'S2H_A9E198A'}?autoplay=1&modestbranding=1&rel=0`}
                    title="NGO Training Video"
                    frameBorder="0"
                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

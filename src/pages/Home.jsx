@@ -131,24 +131,27 @@ const Home = () => {
               © 2026 LAKSHMI NGO. REGISTERED UNDER NGO ACT 2014.
             </p>
             
-            <div className="flex justify-center gap-10">
+            <div className="flex flex-wrap justify-center gap-6">
               {[
-                { name: 'Facebook', icon: <Globe size={22} />, color: 'hover:text-[#1877F2]' },
-                { name: 'Instagram', icon: <Camera size={22} />, color: 'hover:text-[#E4405F]' },
-                { name: 'Twitter', icon: <MessageCircle size={22} />, color: 'hover:text-[#1DA1F2]' },
-                { name: 'YouTube', icon: <Play size={22} />, color: 'hover:text-[#FF0000]' },
-                { name: 'LinkedIn', icon: <Briefcase size={22} />, color: 'hover:text-[#0A66C2]' }
+                { name: 'Facebook', icon: <Globe size={22} />, color: 'hover:text-[#1877F2]', url: 'https://facebook.com' },
+                { name: 'Instagram', icon: <Camera size={22} />, color: 'hover:text-[#E4405F]', url: 'https://instagram.com' },
+                { name: 'Twitter', icon: <MessageCircle size={22} />, color: 'hover:text-[#1DA1F2]', url: 'https://twitter.com' },
+                { name: 'YouTube', icon: <Play size={22} />, color: 'hover:text-[#FF0000]', url: 'https://youtube.com' },
+                { name: 'LinkedIn', icon: <Briefcase size={22} />, color: 'hover:text-[#0A66C2]', url: 'https://linkedin.com' }
               ].map((social) => (
                 <a 
                   key={social.name} 
-                  href="#" 
-                  className={`group relative p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 transition-all duration-500 hover:scale-125 hover:-translate-y-2 ${social.color} hover:border-gray-400/30 hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.3)]`}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group relative flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-[2rem] text-gray-400 transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${social.color} hover:border-gray-400/30 hover:shadow-[0_15px_30px_-5px_rgba(0,0,0,0.3)]`}
                   aria-label={social.name}
                 >
                   <div className="relative z-10 transition-transform duration-500 group-hover:rotate-[360deg]">
                     {social.icon}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+                  <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.2em]">{social.name}</span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[2rem]" />
                 </a>
               ))}
             </div>
